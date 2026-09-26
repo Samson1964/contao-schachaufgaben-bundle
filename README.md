@@ -3,7 +3,21 @@
 Schachaufgaben-Training nach dem Vorbild von [lichess.org/training](https://lichess.org/training)
 für Contao 4.13 und Contao 5.7 (PHP 7.4 bis 8.4).
 
-> **Stand:** Grundgerüst. Die Funktionen unten sind geplant und noch nicht umgesetzt.
+> **Stand:** Grundgerüst mit Aufgabentabelle und Backend-Modul. Import, Frontend,
+> Wertung und Ranglisten sind geplant und noch nicht umgesetzt.
+
+## Aufbau einer Aufgabe
+
+| Feld | Inhalt |
+| --- | --- |
+| `fen` | Stellung **vor** dem ersten Zug |
+| `zuege` | UCI-Züge, durch Leerzeichen getrennt. Der erste ist der Gegnerzug, der die Aufgabe auslöst; danach wechseln Lösung und Antwort. |
+| `wertung`, `wertungAbweichung`, `wertungVolatilitaet` | Schwierigkeit nach Glicko-2 |
+| `beliebtheit`, `spiele` | Lichess-Beliebtheit (-100 bis 100) und Zahl der Versuche |
+| `motive`, `eroeffnung` | Motive und Eröffnung im Lichess-Format |
+| `quelle`, `lichessId`, `partieUrl` | Herkunft; `lichessId` ist eindeutig und unterscheidet Groß- und Kleinschreibung |
+
+Die Aufgaben werden im Backend unter **Inhalte → Schachaufgaben** verwaltet.
 
 ## Geplanter Umfang
 
