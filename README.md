@@ -52,6 +52,18 @@ Hinweise:
   kann daher einfach neu gestartet werden; `--limit` zählt dabei auch die übersprungenen mit.
 * Jede Zeile wird auf eine formal gültige FEN und UCI-Zugfolge geprüft; kaputte Zeilen werden
   gezählt und übersprungen, nicht importiert.
+* Mit `--limit` hört der Import auf zu lesen, bevor `zstd` fertig ist. Die Meldung
+  `zstd: error 70 : Write error : … Broken pipe` ist dann harmlos; mit `zstd -dcq … 2>/dev/null`
+  bleibt sie aus.
+
+Messwerte (Sammlung vom 9. September 2026, PHP 8.4, MariaDB, lokaler Rechner):
+
+| Lauf | Ergebnis | Dauer |
+| --- | --- | --- |
+| Probelauf über die ganze Datei | 6.100.952 Aufgaben, keine fehlerhaft | 83 s |
+| `--min-beliebtheit=80 --min-spiele=1000` | 1.848.994 Aufgaben erfüllen die Filter | 83 s |
+| dasselbe mit `--limit=100000` | 100.000 Aufgaben geschrieben (Wertung 399 bis 3208, Mittel 1579) | 10–11 s |
+| Wiederholung | nichts geschrieben, alle übersprungen | 9 s |
 
 ## Tests
 
