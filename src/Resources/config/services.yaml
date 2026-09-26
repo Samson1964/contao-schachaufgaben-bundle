@@ -1,0 +1,17 @@
+# Alle Klassen unter src/ werden automatisch als Dienste registriert, damit
+# künftige Konsolenbefehle (Aufgaben-Import), Hooks, DCA-Callbacks und
+# Controller ohne weitere Einträge greifen. Ausgenommen sind die Klassen,
+# die Symfony bzw. der Contao Manager selbst laden, sowie die Ressourcen.
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+
+    Schachbulle\ContaoSchachaufgabenBundle\:
+        resource: '../../'
+        exclude:
+            - '../../ContaoSchachaufgabenBundle.php'
+            - '../../ContaoManager/'
+            - '../../DependencyInjection/'
+            - '../../Resources/'
