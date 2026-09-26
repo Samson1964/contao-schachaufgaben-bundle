@@ -1,0 +1,30 @@
+<?php $this->extend('block_unsearchable'); ?>
+
+<?php $this->block('content'); ?>
+
+  <div class="schachaufgaben-training" data-konfiguration="<?= Contao\StringUtil::specialchars(json_encode($this->konfiguration, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)) ?>">
+    <div class="schachaufgaben-brett" aria-label="Schachbrett"></div>
+
+    <div class="schachaufgaben-seite">
+      <p class="schachaufgaben-wertung">
+        <?= $this->texte['deineWertung'] ?>: <strong data-wertung>–</strong> <span class="schachaufgaben-differenz" data-differenz></span>
+        <small class="schachaufgaben-zaehler" data-zaehler></small>
+      </p>
+
+      <p class="schachaufgaben-status" data-status role="status" aria-live="polite"><?= $this->texte['laden'] ?></p>
+
+      <div class="schachaufgaben-info" data-info hidden></div>
+
+      <div class="schachaufgaben-knoepfe">
+        <button type="button" class="schachaufgaben-knopf" data-aktion="loesung" disabled><?= $this->texte['loesungZeigen'] ?></button>
+        <button type="button" class="schachaufgaben-knopf schachaufgaben-knopf--haupt" data-aktion="naechste" hidden><?= $this->texte['naechste'] ?></button>
+      </div>
+
+      <p class="schachaufgaben-gast" data-gast hidden><?= $this->texte['gastHinweis'] ?></p>
+      <p class="schachaufgaben-quelle"><small><?= $this->texte['quelle'] ?></small></p>
+    </div>
+  </div>
+
+  <script type="module" src="<?= $this->skript ?>"></script>
+
+<?php $this->endblock(); ?>

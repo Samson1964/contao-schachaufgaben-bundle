@@ -10,11 +10,20 @@ declare(strict_types=1);
  */
 
 use Schachbulle\ContaoSchachaufgabenBundle\Model\SchachaufgabeModel;
+use Schachbulle\ContaoSchachaufgabenBundle\Module\RanglisteModule;
+use Schachbulle\ContaoSchachaufgabenBundle\Module\TrainingModule;
 
 // Backend-Modul im Bereich „Inhalte"
 $GLOBALS['BE_MOD']['content']['schachaufgaben'] = array
 (
 	'tables' => array('tl_schachaufgaben'),
+);
+
+// Frontend-Module in eigener Gruppe
+$GLOBALS['FE_MOD']['schachaufgaben'] = array
+(
+	'schachaufgaben_training'  => TrainingModule::class,
+	'schachaufgaben_rangliste' => RanglisteModule::class,
 );
 
 $GLOBALS['TL_MODELS']['tl_schachaufgaben'] = SchachaufgabeModel::class;

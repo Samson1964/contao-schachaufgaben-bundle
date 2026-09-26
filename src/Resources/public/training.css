@@ -1,0 +1,132 @@
+/*
+ * Schachaufgaben-Training: Brett links, Anzeige rechts; auf schmalen
+ * Bildschirmen untereinander. Farben über Eigenschaften, damit ein Theme sie
+ * überschreiben kann, ohne diese Datei anzufassen.
+ */
+.schachaufgaben-training {
+	--schachaufgaben-erfolg: #2e7d32;
+	--schachaufgaben-fehler: #c62828;
+	--schachaufgaben-haupt: #1f6fb2;
+	--schachaufgaben-rand: #c8c8c8;
+
+	display: grid;
+	grid-template-columns: minmax(0, 36rem) minmax(14rem, 1fr);
+	gap: 1.5rem;
+	align-items: start;
+}
+
+.schachaufgaben-brett {
+	width: 100%;
+	aspect-ratio: 1;
+}
+
+.schachaufgaben-seite > * {
+	margin: 0 0 1rem;
+}
+
+.schachaufgaben-wertung strong {
+	font-size: 1.5em;
+}
+
+.schachaufgaben-differenz[data-richtung="plus"] {
+	color: var(--schachaufgaben-erfolg);
+}
+
+.schachaufgaben-differenz[data-richtung="minus"] {
+	color: var(--schachaufgaben-fehler);
+}
+
+.schachaufgaben-zaehler {
+	display: block;
+	opacity: .75;
+}
+
+.schachaufgaben-status {
+	min-height: 3em;
+	font-weight: bold;
+}
+
+.schachaufgaben-status[data-art="erfolg"] {
+	color: var(--schachaufgaben-erfolg);
+}
+
+.schachaufgaben-status[data-art="fehler"] {
+	color: var(--schachaufgaben-fehler);
+}
+
+.schachaufgaben-info {
+	padding: .75rem 1rem;
+	border-left: 3px solid var(--schachaufgaben-rand);
+}
+
+.schachaufgaben-info p {
+	margin: 0 0 .25rem;
+}
+
+.schachaufgaben-knoepfe {
+	display: flex;
+	flex-wrap: wrap;
+	gap: .5rem;
+}
+
+.schachaufgaben-knopf {
+	padding: .6em 1.2em;
+	border: 1px solid var(--schachaufgaben-rand);
+	border-radius: 4px;
+	background: #fff;
+	color: inherit;
+	font: inherit;
+	cursor: pointer;
+}
+
+.schachaufgaben-knopf:disabled {
+	opacity: .5;
+	cursor: default;
+}
+
+.schachaufgaben-knopf--haupt {
+	border-color: var(--schachaufgaben-haupt);
+	background: var(--schachaufgaben-haupt);
+	color: #fff;
+}
+
+.schachaufgaben-knopf:focus-visible {
+	outline: 2px solid var(--schachaufgaben-haupt);
+	outline-offset: 2px;
+}
+
+.schachaufgaben-gast {
+	font-size: .9em;
+	opacity: .8;
+}
+
+@media (max-width: 48rem) {
+	.schachaufgaben-training {
+		grid-template-columns: minmax(0, 1fr);
+	}
+}
+
+/* Rangliste */
+.schachaufgaben-rangliste {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+.schachaufgaben-rangliste th,
+.schachaufgaben-rangliste td {
+	padding: .4em .6em;
+	border-bottom: 1px solid #e0e0e0;
+	text-align: left;
+}
+
+.schachaufgaben-rangliste .platz,
+.schachaufgaben-rangliste .wertung,
+.schachaufgaben-rangliste .versuche,
+.schachaufgaben-rangliste .quote {
+	text-align: right;
+	font-variant-numeric: tabular-nums;
+}
+
+.schachaufgaben-rangliste tr.eigene td {
+	font-weight: bold;
+}

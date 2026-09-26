@@ -15,7 +15,11 @@ use Contao\CoreBundle\ContaoCoreBundle;
 use Contao\ManagerPlugin\Bundle\BundlePluginInterface;
 use Contao\ManagerPlugin\Bundle\Config\BundleConfig;
 use Contao\ManagerPlugin\Bundle\Parser\ParserInterface;
+use Contao\ManagerPlugin\Routing\RoutingPluginInterface;
 use Schachbulle\ContaoSchachaufgabenBundle\ContaoSchachaufgabenBundle;
+use Symfony\Component\Config\Loader\LoaderResolverInterface;
+use Symfony\Component\HttpKernel\KernelInterface;
+use Symfony\Component\Routing\RouteCollection;
 
 /**
  * Meldet das Bundle beim Contao Manager an.
@@ -23,7 +27,7 @@ use Schachbulle\ContaoSchachaufgabenBundle\ContaoSchachaufgabenBundle;
  * Ohne diese Klasse taucht das Bundle nicht im Kernel auf, weil Contao die
  * Bundle-Liste aus den Plugins aller installierten Pakete zusammensetzt.
  */
-class Plugin implements BundlePluginInterface
+class Plugin implements BundlePluginInterface, RoutingPluginInterface
 {
 	/**
 	 * Meldet das Bundle beim Kernel an.
@@ -43,5 +47,22 @@ class Plugin implements BundlePluginInterface
 			BundleConfig::create(ContaoSchachaufgabenBundle::class)
 				->setLoadAfter(array(ContaoCoreBundle::class)),
 		);
+	}
+
+	/**
+	 * Lädt die Routen der JSON-Schnittstelle des Trainings.
+	 *
+	 * @param LoaderResolverInterface $resolver Findet den passenden Lader für YAML
+	 * @param KernelInterface         $kernel   Wird nicht benötigt
+	 *
+	 * @return RouteCollection|null Die Routen aus Resources/config/routes.yaml,
+	 *                              oder null, wenn kein YAML-Lader verfügbar ist
+	 */
+	public function getRouteCollection(LoaderResolverInterface $resolver, KernelInterface $kernel): ?RouteCollection
+	{
+		$datei = __DIR__.'/../Resources/config/routes.yaml';
+		$loader = $resolver->resolve($datei);
+
+		return false === $loader ? null : $loader->load($datei);
 	}
 }

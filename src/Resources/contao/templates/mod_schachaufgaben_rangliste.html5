@@ -1,0 +1,32 @@
+<?php $this->extend('block_unsearchable'); ?>
+
+<?php $this->block('content'); ?>
+
+  <?php if (empty($this->liste)): ?>
+    <p class="empty"><?= sprintf($this->texte['leer'], $this->minVersuche) ?></p>
+  <?php else: ?>
+    <table class="schachaufgaben-rangliste">
+      <thead>
+        <tr>
+          <th scope="col" class="platz"><?= $this->texte['platz'] ?></th>
+          <th scope="col" class="name"><?= $this->texte['name'] ?></th>
+          <th scope="col" class="wertung"><?= $this->texte['wertung'] ?></th>
+          <th scope="col" class="versuche"><?= $this->texte['gespielt'] ?></th>
+          <th scope="col" class="quote"><?= $this->texte['quote'] ?></th>
+        </tr>
+      </thead>
+      <tbody>
+        <?php foreach ($this->liste as $zeile): ?>
+          <tr<?php if ($zeile['eigene']): ?> class="eigene" aria-current="true"<?php endif; ?>>
+            <td class="platz"><?= $zeile['platz'] ?></td>
+            <td class="name"><?= Contao\StringUtil::specialchars($zeile['name']) ?></td>
+            <td class="wertung"><?= $zeile['wertung'] ?></td>
+            <td class="versuche"><?= $zeile['versuche'] ?></td>
+            <td class="quote"><?= $zeile['quote'] ?> %</td>
+          </tr>
+        <?php endforeach; ?>
+      </tbody>
+    </table>
+  <?php endif; ?>
+
+<?php $this->endblock(); ?>

@@ -1,0 +1,18 @@
+# JSON-Schnittstelle des Trainings. _scope: frontend sorgt dafür, dass die
+# Firewall des Frontends greift und angemeldete Mitglieder erkannt werden.
+schachaufgaben_aufgabe:
+    path: /_schachaufgaben/aufgabe
+    controller: Schachbulle\ContaoSchachaufgabenBundle\Controller\TrainingController::aufgabe
+    methods: [GET]
+    defaults:
+        _scope: frontend
+
+# Der Controller prüft selbst auf application/json (siehe dort); Contao
+# lässt JSON-Anfragen ohnehin ohne Request-Token passieren.
+schachaufgaben_ergebnis:
+    path: /_schachaufgaben/ergebnis
+    controller: Schachbulle\ContaoSchachaufgabenBundle\Controller\TrainingController::ergebnis
+    methods: [POST]
+    defaults:
+        _scope: frontend
+        _token_check: false

@@ -1,8 +1,8 @@
 # Alle Klassen unter src/ werden automatisch als Dienste registriert, damit
 # künftige Konsolenbefehle (Aufgaben-Import), Hooks, DCA-Callbacks und
 # Controller ohne weitere Einträge greifen. Ausgenommen sind die Klassen,
-# die Symfony bzw. der Contao Manager selbst laden, die Contao-Models (sie
-# werden von Contao je Datensatz erzeugt) sowie die Ressourcen.
+# die Symfony bzw. der Contao Manager selbst laden, die Contao-Models und die
+# klassischen Frontend-Module (beide erzeugt Contao selbst) sowie die Ressourcen.
 services:
     _defaults:
         autowire: true
@@ -16,11 +16,17 @@ services:
             - '../../ContaoManager/'
             - '../../DependencyInjection/'
             - '../../Model/'
+            - '../../Module/'
             - '../../Resources/'
 
     # Befehlsname als Tag, damit die Konsole den Befehl erst beim Aufruf
     # erzeugt. #[AsCommand] greift unter PHP 7.4 nicht, $defaultName gibt es
     # in Symfony 7 nicht mehr — der Tag funktioniert unter beiden Fassungen.
+    # Controller müssen öffentlich sein, damit der Router sie abrufen kann
+    Schachbulle\ContaoSchachaufgabenBundle\Controller\TrainingController:
+        public: true
+        tags: ['controller.service_arguments']
+
     Schachbulle\ContaoSchachaufgabenBundle\Command\ImportCommand:
         tags:
             - { name: console.command, command: 'schachaufgaben:import' }

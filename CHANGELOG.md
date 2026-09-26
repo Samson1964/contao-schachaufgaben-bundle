@@ -19,3 +19,21 @@
   Wertung bleibt dabei erhalten, außer mit `--wertung-uebernehmen`.
 * Add: Unit-Tests für Prüfung, Einlesen und Filter (PHPUnit 9.6) mit einem Auszug der
   Lichess-Datei in `tests/Fixtures/`.
+* Add: Frontend-Modul „Schachaufgaben-Training" mit Brett (cm-chessboard 8.14.2) und
+  Zugprüfung (chess.js 1.4.0): Gegnerzug, Zugeingabe mit Umwandlungsdialog, jeder Mattzug
+  zählt, Wertung nur für den ersten Anlauf, „Lösung zeigen", Angaben zur Aufgabe erst nach
+  dem Ende (Motive auf Deutsch). Auch auf dem Handy bedienbar.
+* Add: Wertung nach Glicko-2 für Spieler und Aufgaben (`Wertung\Glicko2`), geprüft am
+  Rechenbeispiel von Glickman.
+* Add: Aufgabenwahl zufällig um die eigene Wertung (±100, Streuung wächst bei Bedarf), damit
+  die Aufgaben mit steigender Wertung schwerer werden. Keine Aufgabe wird zweimal gestellt:
+  Mitglieder über `tl_schachaufgaben_versuch` (Eintrag schon beim Stellen), Gäste über die
+  Sitzung.
+* Add: Tabellen `tl_schachaufgaben_spieler` (Wertung je Mitglied) und
+  `tl_schachaufgaben_versuch` (gestellte Aufgaben und Ergebnisse).
+* Add: JSON-Schnittstelle `/_schachaufgaben/aufgabe` und `/_schachaufgaben/ergebnis`; das
+  Ergebnis wird nur als JSON und nur einmal je gestellter Aufgabe angenommen.
+* Add: Frontend-Modul „Schachaufgaben-Rangliste" mit Mindestzahl gespielter Aufgaben;
+  Namen als „Vorname N.", gesperrte Mitglieder ausgenommen.
+* Add: Gegen Contao 4.13.58 und 5.7.7 mit PHP 8.4 im Browser durchgespielt (Gast und
+  Mitglied).

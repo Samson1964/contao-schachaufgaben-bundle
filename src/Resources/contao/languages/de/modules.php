@@ -9,4 +9,10 @@ declare(strict_types=1);
  * @license LGPL-3.0-or-later
  */
 
+// Backend-Modul
 $GLOBALS['TL_LANG']['MOD']['schachaufgaben'] = array('Schachaufgaben', 'Aufgaben für das Schachtraining verwalten');
+
+// Frontend-Module
+$GLOBALS['TL_LANG']['FMD']['schachaufgaben'] = 'Schachaufgaben';
+$GLOBALS['TL_LANG']['FMD']['schachaufgaben_training'] = array('Schachaufgaben-Training', 'Aufgaben lösen wie bei lichess.org/training, mit eigener Wertung für Mitglieder und Gäste.');
+$GLOBALS['TL_LANG']['FMD']['schachaufgaben_rangliste'] = array('Schachaufgaben-Rangliste', 'Die Mitglieder mit der höchsten Wertung im Schachaufgaben-Training.');

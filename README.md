@@ -3,8 +3,63 @@
 Schachaufgaben-Training nach dem Vorbild von [lichess.org/training](https://lichess.org/training)
 für Contao 4.13 und Contao 5.7 (PHP 7.4 bis 8.4).
 
-> **Stand:** Aufgabentabelle, Backend-Modul und Import der Lichess-Sammlung.
-> Frontend, Wertung und Ranglisten sind geplant und noch nicht umgesetzt.
+> **Stand:** Aufgabentabelle, Import der Lichess-Sammlung per Konsole, Training im Frontend
+> mit Glicko-2-Wertung und Rangliste. Ein Import im Backend ist geplant.
+
+## Frontend-Module
+
+Unter **Themes → Frontend-Module**, Gruppe „Schachaufgaben":
+
+* **Schachaufgaben-Training** – Brett mit Zugeingabe per Klick oder Ziehen (auch auf dem
+  Handy), Anzeige der eigenen Wertung, Knöpfe „Lösung zeigen" und „Nächste Aufgabe".
+  Nach Ende einer Aufgabe erscheinen ihre Wertung, die Motive auf Deutsch, die Eröffnung
+  und ein Link zur Herkunftspartie.
+* **Schachaufgaben-Rangliste** – die Mitglieder mit der höchsten Wertung, Name als
+  „Vorname N.". Einstellbar: Anzahl der Plätze und Mindestzahl gespielter Aufgaben
+  (Standard 20). Das angemeldete Mitglied wird hervorgehoben.
+
+Für angemeldete Mitglieder gehört ein Anmeldemodul von Contao auf die Seite; ohne
+Anmeldung wird als Gast gespielt.
+
+### So läuft eine Aufgabe
+
+1. Die Stellung erscheint, der Gegner macht den ersten Zug.
+2. Der Spieler sucht den besten Zug. Richtige Züge beantwortet der Gegner mit dem nächsten
+   Zug der Lösung, bis die Zugfolge durchgespielt ist. Jeder andere Mattzug zählt ebenfalls
+   als richtig.
+3. Gewertet wird nur der **erste Anlauf**: Ein falscher Zug oder „Lösung zeigen" zählt als
+   nicht gelöst. Danach darf weiterprobiert werden, ohne dass sich die Wertung ändert.
+
+### Wertung und Auswahl der Aufgaben
+
+* Spieler und Aufgabe treten wie bei Lichess nach **Glicko-2** gegeneinander an: Löst der
+  Spieler die Aufgabe, gewinnt er, sonst gewinnt die Aufgabe. Neue Spieler starten mit
+  1500 ± 350, die Wertung bewegt sich anfangs deshalb stark und wird mit jeder Aufgabe
+  sicherer.
+* Die nächste Aufgabe liegt **zufällig in der Nähe der eigenen Wertung** (±100 Punkte, aus
+  den zehn nächstgelegenen wird gelost). Mit steigender Wertung werden die Aufgaben also von
+  selbst schwerer, nach Fehlern leichter.
+* **Keine Aufgabe kommt zweimal.** Bei Mitgliedern wird jede gestellte Aufgabe sofort in
+  `tl_schachaufgaben_versuch` vermerkt – auch übersprungene oder durch Neuladen verworfene.
+  Gäste haben eine Merkliste in der Sitzung, die für die Dauer des Besuchs gilt.
+* Die Wertung einer Aufgabe ändert sich nur durch Mitglieder, damit Gäste sie nicht
+  verfälschen können.
+* Gäste behalten ihre Wertung nur für die Sitzung und erscheinen nicht in der Rangliste.
+
+### Technik
+
+Das Brett ist [cm-chessboard](https://github.com/shaack/cm-chessboard) 8.14.2 (MIT), die
+Zugprüfung [chess.js](https://github.com/jhlywa/chess.js) 1.4.0 (BSD-2-Clause). Beide liegen
+unverändert (nur ohne Source-Map-Verweise) unter `src/Resources/public/vendor/` samt
+Lizenzdatei. Das Frontend spricht über zwei Routen mit dem Server:
+
+| Route | Zweck |
+| --- | --- |
+| `GET /_schachaufgaben/aufgabe` | nächste Aufgabe stellen |
+| `POST /_schachaufgaben/ergebnis` | Ergebnis melden, JSON `{"id": 123, "geloest": true}` |
+
+Das Ergebnis wird nur als `application/json` angenommen (Schutz vor fremden Formularen) und
+nur für eine gestellte, noch nicht gewertete Aufgabe.
 
 ## Aufbau einer Aufgabe
 
