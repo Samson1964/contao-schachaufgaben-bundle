@@ -7,3 +7,6 @@
 
 # Private Arbeitsnotiz
 /TODO.md
+
+# PhpUnit-Zwischenstand
+/.phpunit.result.cache

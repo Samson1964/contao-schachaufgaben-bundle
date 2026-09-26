@@ -29,7 +29,8 @@
         "contao/manager-plugin": "<2.0 || >=3.0"
     },
     "require-dev": {
-        "contao/manager-plugin": "^2.0"
+        "contao/manager-plugin": "^2.0",
+        "phpunit/phpunit": "^9.6"
     },
     "extra": {
         "contao-manager-plugin": "Schachbulle\\ContaoSchachaufgabenBundle\\ContaoManager\\Plugin"
@@ -37,6 +38,11 @@
     "autoload": {
         "psr-4": {
             "Schachbulle\\ContaoSchachaufgabenBundle\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Schachbulle\\ContaoSchachaufgabenBundle\\Tests\\": "tests/"
         }
     },
     "support": {
