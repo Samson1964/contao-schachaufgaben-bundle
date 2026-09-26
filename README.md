@@ -3,8 +3,8 @@
 Schachaufgaben-Training nach dem Vorbild von [lichess.org/training](https://lichess.org/training)
 für Contao 4.13 und Contao 5.7 (PHP 7.4 bis 8.4).
 
-> **Stand:** Aufgabentabelle, Import der Lichess-Sammlung per Konsole, Training im Frontend
-> mit Glicko-2-Wertung und Rangliste. Ein Import im Backend ist geplant.
+> **Stand:** Aufgabentabelle, Import der Lichess-Sammlung im Backend und per Konsole,
+> Training im Frontend mit Glicko-2-Wertung und Rangliste.
 
 ## Frontend-Module
 
@@ -79,8 +79,30 @@ Die Aufgaben werden im Backend unter **Inhalte → Schachaufgaben** verwaltet.
 Lichess stellt seine komplette Aufgabensammlung unter
 [database.lichess.org](https://database.lichess.org/#puzzles) gemeinfrei (CC0) zur Verfügung:
 mehrere Millionen Aufgaben aus echten Partien, von Stockfish geprüft. Die Datei
-`lichess_db_puzzle.csv.zst` ist mit Zstandard gepackt; sie kann vorher entpackt oder direkt
-durchgereicht werden:
+`lichess_db_puzzle.csv.zst` ist mit Zstandard gepackt.
+
+### Im Backend
+
+1. Die Datei auf dem eigenen Rechner entpacken (`zstd -d lichess_db_puzzle.csv.zst` oder
+   7-Zip ZS). Die CSV ist gut 1 GB groß.
+2. Die CSV per FTP irgendwo unter `files/` ablegen (die Upload-Grenze des Formulars reicht
+   dafür nicht).
+3. Im Backend unter **Inhalte → Schachaufgaben → Lichess-Import** die Datei wählen, Filter
+   setzen und „Import starten".
+
+Der Import läuft in Häppchen von etwa acht Sekunden, die das Skript der Seite nacheinander
+anstößt; so bleibt jeder Aufruf weit unter der `max_execution_time` des Servers. Eine
+Fortschrittsanzeige zeigt gelesene, ausgefilterte und übernommene Zeilen. Der Import lässt
+sich anhalten; ist das Fenster geschlossen oder die Verbindung weg, bietet die Seite beim
+nächsten Aufruf „Fortsetzen" an derselben Stelle an. Die Filter entsprechen denen des
+Konsolenbefehls.
+
+Gemessen (PHP-Entwicklungsserver, lokale MariaDB): die ganze Datei mit 6,1 Mio. Zeilen in
+1:49 Minuten, 50.000 neue Aufgaben in 12 Sekunden.
+
+### Per Konsole
+
+Mit SSH-Zugang kann die gepackte Datei direkt durchgereicht werden:
 
 ```bash
 zstd -dc lichess_db_puzzle.csv.zst | php vendor/bin/contao-console schachaufgaben:import - --min-beliebtheit=80 --min-spiele=1000 --limit=100000

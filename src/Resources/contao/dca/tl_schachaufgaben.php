@@ -62,6 +62,13 @@ $GLOBALS['TL_DCA']['tl_schachaufgaben'] = array
 		),
 		'global_operations' => array
 		(
+			'import' => array
+			(
+				'label'      => &$GLOBALS['TL_LANG']['tl_schachaufgaben']['import'],
+				'href'       => 'key=import',
+				'class'      => 'header_theme_import',
+				'icon'       => 'theme_import.svg',
+			),
 			'all' => array
 			(
 				'href'       => 'act=select',

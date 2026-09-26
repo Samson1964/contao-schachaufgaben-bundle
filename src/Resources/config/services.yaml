@@ -27,6 +27,16 @@ services:
         public: true
         tags: ['controller.service_arguments']
 
+    # Öffentlich, weil Contao den key-Callback aus $GLOBALS['BE_MOD'] über
+    # System::importStatic() aus dem Container holt
+    Schachbulle\ContaoSchachaufgabenBundle\Backend\ImportSeite:
+        public: true
+        arguments:
+            $tokenManager: '@contao.csrf.token_manager'
+            $tokenName: '%contao.csrf_token_name%'
+            $projektVerzeichnis: '%kernel.project_dir%'
+            $uploadPfad: '%contao.upload_path%'
+
     Schachbulle\ContaoSchachaufgabenBundle\Command\ImportCommand:
         tags:
             - { name: console.command, command: 'schachaufgaben:import' }

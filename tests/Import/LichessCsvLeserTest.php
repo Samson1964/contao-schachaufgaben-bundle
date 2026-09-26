@@ -68,7 +68,7 @@ class LichessCsvLeserTest extends TestCase
 	public function testGepackteDateiWirdAbgewiesen(): void
 	{
 		$this->expectException(\RuntimeException::class);
-		$this->expectExceptionMessage('Zstandard');
+		$this->expectExceptionMessage('gepackt');
 
 		iterator_to_array((new LichessCsvLeser())->lesen('lichess_db_puzzle.csv.zst'));
 	}

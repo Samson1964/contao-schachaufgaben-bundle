@@ -1,0 +1,188 @@
+<?php $t = $this->texte; ?>
+<div id="tl_buttons">
+  <a href="<?= $this->zurueck ?>" class="header_back" title="<?= Contao\StringUtil::specialchars($t['zurueck']) ?>" accesskey="b"><?= $t['zurueck'] ?></a>
+</div>
+
+<form class="tl_form" id="schachaufgaben-import" data-adresse="<?= Contao\StringUtil::specialchars($this->adresse) ?>" data-token="<?= Contao\StringUtil::specialchars($this->token) ?>">
+  <div class="tl_formbody_edit">
+
+    <div class="tl_tbox">
+      <p class="tl_info" style="margin-bottom:12px"><?= sprintf($t['anleitung'], $this->uploadPfad) ?></p>
+
+      <?php if ($this->offen): ?>
+        <div class="tl_confirm" data-offen style="margin-bottom:12px">
+          <?= sprintf($t['offen'], Contao\StringUtil::specialchars($this->offen['datei']), number_format($this->offen['prozent'], 1, ',', '.')) ?>
+          <button type="button" class="tl_submit" data-aktion="fortsetzen"><?= $t['fortsetzen'] ?></button>
+          <button type="button" class="tl_submit" data-aktion="verwerfen"><?= $t['verwerfen'] ?></button>
+        </div>
+      <?php endif; ?>
+
+      <?php if (empty($this->dateien)): ?>
+        <p class="tl_error"><?= sprintf($t['keineDateien'], $this->uploadPfad) ?></p>
+      <?php else: ?>
+        <div class="widget">
+          <h3><label for="schachaufgaben-datei"><?= $t['datei'] ?></label></h3>
+          <select name="datei" id="schachaufgaben-datei" class="tl_select">
+            <?php foreach ($this->dateien as $datei): ?>
+              <option value="<?= Contao\StringUtil::specialchars($datei['pfad']) ?>"><?= Contao\StringUtil::specialchars($datei['pfad']) ?> (<?= number_format($datei['groesse'] / 1048576, 1, ',', '.') ?> MB)</option>
+            <?php endforeach; ?>
+          </select>
+        </div>
+      <?php endif; ?>
+    </div>
+
+    <fieldset class="tl_box">
+      <legend><?= $t['filter_legend'] ?></legend>
+      <?php foreach (array('minBeliebtheit' => '80', 'minSpiele' => '1000', 'minWertung' => '', 'maxWertung' => '', 'limit' => '100000') as $feld => $vorgabe): ?>
+        <div class="w50 widget">
+          <h3><label for="schachaufgaben-<?= $feld ?>"><?= $t[$feld][0] ?></label></h3>
+          <input type="number" name="<?= $feld ?>" id="schachaufgaben-<?= $feld ?>" class="tl_text" value="<?= $vorgabe ?>">
+          <p class="tl_help tl_tip"><?= $t[$feld][1] ?></p>
+        </div>
+      <?php endforeach; ?>
+      <div class="w50 widget">
+        <h3><label for="schachaufgaben-motive"><?= $t['motive'][0] ?></label></h3>
+        <input type="text" name="motive" id="schachaufgaben-motive" class="tl_text">
+        <p class="tl_help tl_tip"><?= $t['motive'][1] ?></p>
+      </div>
+    </fieldset>
+
+    <fieldset class="tl_box">
+      <legend><?= $t['optionen_legend'] ?></legend>
+      <?php foreach (array('aktualisieren', 'wertungUebernehmen', 'unveroeffentlicht') as $feld): ?>
+        <div class="widget clr">
+          <div class="tl_checkbox_single_container">
+            <input type="checkbox" name="<?= $feld ?>" id="schachaufgaben-<?= $feld ?>" value="1" class="tl_checkbox">
+            <label for="schachaufgaben-<?= $feld ?>"><?= $t[$feld][0] ?></label>
+          </div>
+          <p class="tl_help tl_tip"><?= $t[$feld][1] ?></p>
+        </div>
+      <?php endforeach; ?>
+    </fieldset>
+
+    <div class="tl_box" data-fortschritt hidden>
+      <p><strong data-meldung></strong></p>
+      <progress max="100" value="0" style="width:100%;height:1.2em"></progress>
+      <p data-zahlen></p>
+      <div data-fehler></div>
+    </div>
+  </div>
+
+  <div class="tl_formbody_submit">
+    <div class="tl_submit_container">
+      <?php if (!empty($this->dateien)): ?>
+        <button type="submit" class="tl_submit" data-aktion="start"><?= $t['starten'] ?></button>
+      <?php endif; ?>
+      <button type="button" class="tl_submit" data-aktion="anhalten" hidden><?= $t['anhalten'] ?></button>
+    </div>
+  </div>
+</form>
+
+<script>
+(function () {
+  const formular = document.getElementById('schachaufgaben-import');
+  if (!formular || formular.dataset.bereit) {
+    return;
+  }
+  formular.dataset.bereit = '1';
+
+  const texte = <?= json_encode($t, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP) ?>;
+  const bereich = formular.querySelector('[data-fortschritt]');
+  const meldung = bereich.querySelector('[data-meldung]');
+  const balken = bereich.querySelector('progress');
+  const zahlen = bereich.querySelector('[data-zahlen]');
+  const fehler = bereich.querySelector('[data-fehler]');
+  const knoepfe = formular.querySelectorAll('[data-aktion="start"], [data-aktion="fortsetzen"], [data-aktion="verwerfen"]');
+  const anhalten = formular.querySelector('[data-aktion="anhalten"]');
+  let laeuft = false;
+
+  // Schickt eine Aktion samt Request-Token. Bewusst ohne „X-Requested-With":
+  // Damit hielte das Contao-Backend die Anfrage für einen eigenen AJAX-Aufruf
+  // und bräche mit „Missing Ajax action" ab.
+  async function senden(aktion, daten) {
+    daten = daten || new FormData();
+    daten.set('aktion', aktion);
+    daten.set('REQUEST_TOKEN', formular.dataset.token);
+    const antwort = await fetch(formular.dataset.adresse, {method: 'POST', body: daten, credentials: 'same-origin'});
+    let json = null;
+    try { json = await antwort.json(); } catch (e) { /* keine JSON-Antwort */ }
+    if (!antwort.ok || !json) {
+      throw new Error((json && json.fehler) || texte.serverfehler + ' (HTTP ' + antwort.status + ')');
+    }
+    return json;
+  }
+
+  function anzeigen(stand) {
+    bereich.hidden = false;
+    balken.value = stand.prozent;
+    const z = stand.zaehler;
+    const minuten = Math.floor(stand.sekunden / 60) + ':' + String(stand.sekunden % 60).padStart(2, '0');
+    zahlen.textContent = stand.prozent.toLocaleString('de-DE') + ' % · ' +
+      z.gelesen.toLocaleString('de-DE') + ' ' + texte.gelesen + ', ' +
+      z.fehlerhaft.toLocaleString('de-DE') + ' ' + texte.fehlerhaft + ', ' +
+      z.gefiltert.toLocaleString('de-DE') + ' ' + texte.gefiltert + ', ' +
+      z.uebernommen.toLocaleString('de-DE') + ' ' + texte.uebernommen + ', ' +
+      z.geschrieben.toLocaleString('de-DE') + ' ' + texte.geschrieben + ' · ' + texte.dauer + ' ' + minuten;
+    fehler.textContent = '';
+    if (stand.fehler.length) {
+      const titel = document.createElement('p');
+      titel.textContent = texte.fehlerbeispiele + ':';
+      const liste = document.createElement('ul');
+      stand.fehler.forEach(function (text) {
+        const li = document.createElement('li');
+        li.textContent = text;
+        liste.append(li);
+      });
+      fehler.append(titel, liste);
+    }
+  }
+
+  function sperren(an) {
+    knoepfe.forEach(function (knopf) { knopf.disabled = an; });
+    anhalten.hidden = !an;
+  }
+
+  async function durchlaufen(erster) {
+    laeuft = true;
+    sperren(true);
+    meldung.textContent = texte.laeuft;
+    bereich.hidden = false;
+    try {
+      let stand = await erster();
+      anzeigen(stand);
+      while (!stand.fertig && laeuft) {
+        stand = await senden('schritt');
+        anzeigen(stand);
+      }
+      meldung.textContent = stand.fertig ? texte.fertig : texte.angehalten;
+      const offen = formular.querySelector('[data-offen]');
+      if (offen && stand.fertig) {
+        offen.remove();
+      }
+    } catch (e) {
+      meldung.textContent = e.message;
+    }
+    laeuft = false;
+    sperren(false);
+  }
+
+  formular.addEventListener('submit', function (ereignis) {
+    ereignis.preventDefault();
+    durchlaufen(function () { return senden('start', new FormData(formular)); });
+  });
+
+  formular.addEventListener('click', function (ereignis) {
+    const knopf = ereignis.target.closest('button[data-aktion]');
+    if (!knopf) {
+      return;
+    }
+    if (knopf.dataset.aktion === 'fortsetzen') {
+      durchlaufen(function () { return senden('schritt'); });
+    } else if (knopf.dataset.aktion === 'verwerfen') {
+      senden('verwerfen').then(function () { knopf.closest('[data-offen]').remove(); }, function (e) { meldung.textContent = e.message; bereich.hidden = false; });
+    } else if (knopf.dataset.aktion === 'anhalten') {
+      laeuft = false;
+    }
+  });
+})();
+</script>

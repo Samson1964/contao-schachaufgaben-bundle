@@ -9,6 +9,7 @@ declare(strict_types=1);
  * @license LGPL-3.0-or-later
  */
 
+use Schachbulle\ContaoSchachaufgabenBundle\Backend\ImportSeite;
 use Schachbulle\ContaoSchachaufgabenBundle\Model\SchachaufgabeModel;
 use Schachbulle\ContaoSchachaufgabenBundle\Module\RanglisteModule;
 use Schachbulle\ContaoSchachaufgabenBundle\Module\TrainingModule;
@@ -17,6 +18,8 @@ use Schachbulle\ContaoSchachaufgabenBundle\Module\TrainingModule;
 $GLOBALS['BE_MOD']['content']['schachaufgaben'] = array
 (
 	'tables' => array('tl_schachaufgaben'),
+	// Import der Lichess-Sammlung (do=schachaufgaben&key=import)
+	'import' => array(ImportSeite::class, 'ausfuehren'),
 );
 
 // Frontend-Module in eigener Gruppe

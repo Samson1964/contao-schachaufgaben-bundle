@@ -37,3 +37,10 @@
   Namen als „Vorname N.", gesperrte Mitglieder ausgenommen.
 * Add: Gegen Contao 4.13.58 und 5.7.7 mit PHP 8.4 im Browser durchgespielt (Gast und
   Mitglied).
+* Add: Lichess-Import im Backend (Inhalte → Schachaufgaben → Lichess-Import): CSV aus
+  `files/` wählen, Filter wie auf der Konsole, Verarbeitung in Häppchen von acht Sekunden mit
+  Fortschrittsanzeige, Anhalten und Fortsetzen an der gemerkten Dateiposition, auch nach
+  Schließen des Fensters. Geprüft gegen die vollständige Sammlung (6,1 Mio. Zeilen) mit
+  Unterbrechung; das Ergebnis stimmt mit dem Probelauf der Konsole überein.
+* Change: `LichessCsvLeser` stützt sich auf die neue Klasse `LichessCsvDatei`, die an einer
+  Byte-Position fortsetzen kann. Gepackte Dateien (`.zst`, `.gz`) werden mit Hinweis abgewiesen.

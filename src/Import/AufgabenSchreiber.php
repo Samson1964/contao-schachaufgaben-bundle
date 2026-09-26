@@ -107,8 +107,11 @@ class AufgabenSchreiber
 	/**
 	 * Schreibt die restlichen gesammelten Aufgaben.
 	 *
-	 * @return int Anzahl der von MySQL gemeldeten betroffenen Zeilen über den
-	 *             gesamten Import. Bei INSERT IGNORE sind das die neuen
+	 * Der Zähler beginnt danach wieder bei 0, damit der Import im Backend,
+	 * der je Häppchen abschließt, nichts doppelt zählt.
+	 *
+	 * @return int Anzahl der von MySQL gemeldeten betroffenen Zeilen seit dem
+	 *             letzten Abschluss. Bei INSERT IGNORE sind das die neuen
 	 *             Aufgaben; bei ON DUPLICATE KEY UPDATE zählt MySQL jede
 	 *             geänderte Zeile doppelt, unveränderte gar nicht.
 	 */
@@ -116,7 +119,10 @@ class AufgabenSchreiber
 	{
 		$this->blockSchreiben();
 
-		return $this->geschrieben;
+		$geschrieben = $this->geschrieben;
+		$this->geschrieben = 0;
+
+		return $geschrieben;
 	}
 
 	/**
