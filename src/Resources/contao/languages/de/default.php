@@ -30,6 +30,9 @@ $GLOBALS['TL_LANG']['MSC']['schachaufgaben'] = array
 	'partie'           => 'Zur Partie auf Lichess',
 	'loesungZeigen'    => 'Lösung zeigen',
 	'naechste'         => 'Nächste Aufgabe',
+	'bewertenFrage'    => 'Wie gefällt dir die Aufgabe?',
+	'gefaellt'         => 'Gefällt mir',
+	'gefaelltNicht'    => 'Gefällt mir nicht',
 	'gastHinweis'      => 'Als Gast wird deine Wertung nur für diesen Besuch gespeichert. Melde dich an, um sie dauerhaft zu behalten und in der Rangliste zu erscheinen.',
 	'quelle'           => 'Aufgaben: Lichess-Aufgabensammlung (CC0)',
 	'platz'            => 'Platz',
@@ -38,6 +41,9 @@ $GLOBALS['TL_LANG']['MSC']['schachaufgaben'] = array
 	'gespielt'         => 'Aufgaben',
 	'quote'            => 'Gelöst',
 	'leer'             => 'Noch hat niemand genug Aufgaben gespielt, um in der Rangliste zu erscheinen (mindestens %d).',
+	'nochNichtGewertet' => 'noch %d Aufgaben bis zur Wertung',
+	'nochNichtGewertetEins' => 'noch 1 Aufgabe bis zur Wertung',
+	'mindestensHinweis' => 'Aufgenommen ab %d gespielten Aufgaben.',
 );
 
 // Deutsche Namen der Lichess-Motive. Unbekannte Motive zeigt das Training unverändert.

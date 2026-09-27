@@ -7,6 +7,8 @@
 	--schachaufgaben-erfolg: #2e7d32;
 	--schachaufgaben-fehler: #c62828;
 	--schachaufgaben-haupt: #1f6fb2;
+	--schachaufgaben-haupt-dunkel: #174f80;
+	--schachaufgaben-hell: #e8f1f9;
 	--schachaufgaben-rand: #c8c8c8;
 
 	display: grid;
@@ -69,25 +71,68 @@
 	gap: .5rem;
 }
 
-.schachaufgaben-knopf {
+/*
+ * Knöpfe: Alle Zustände ausdrücklich mit Hinter- und Vordergrund, weil viele
+ * Themes für button:hover nur den Hintergrund setzen — schwarze Schrift auf
+ * dunklem Blau wäre die Folge. Die doppelte Klasse hebt die Spezifität über
+ * die üblichen Theme-Regeln.
+ */
+.schachaufgaben-training .schachaufgaben-knopf {
 	padding: .6em 1.2em;
 	border: 1px solid var(--schachaufgaben-rand);
 	border-radius: 4px;
 	background: #fff;
-	color: inherit;
+	color: #1f1f1f;
 	font: inherit;
+	line-height: 1.2;
 	cursor: pointer;
 }
 
-.schachaufgaben-knopf:disabled {
+.schachaufgaben-training .schachaufgaben-knopf:hover:not(:disabled) {
+	border-color: var(--schachaufgaben-haupt);
+	background: var(--schachaufgaben-hell);
+	color: #1f1f1f;
+}
+
+.schachaufgaben-training .schachaufgaben-knopf:disabled {
 	opacity: .5;
 	cursor: default;
 }
 
-.schachaufgaben-knopf--haupt {
+.schachaufgaben-training .schachaufgaben-knopf--haupt {
 	border-color: var(--schachaufgaben-haupt);
 	background: var(--schachaufgaben-haupt);
 	color: #fff;
+}
+
+.schachaufgaben-training .schachaufgaben-knopf--haupt:hover:not(:disabled) {
+	border-color: var(--schachaufgaben-haupt-dunkel);
+	background: var(--schachaufgaben-haupt-dunkel);
+	color: #fff;
+}
+
+.schachaufgaben-training .schachaufgaben-knopf--klein {
+	padding: .35em .8em;
+	font-size: .9em;
+}
+
+.schachaufgaben-training .schachaufgaben-knopf[aria-pressed="true"],
+.schachaufgaben-training .schachaufgaben-knopf[aria-pressed="true"]:hover {
+	border-color: var(--schachaufgaben-haupt);
+	background: var(--schachaufgaben-haupt);
+	color: #fff;
+}
+
+.schachaufgaben-bewertung {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: .5rem;
+}
+
+.schachaufgaben-bewertung__frage {
+	flex-basis: 100%;
+	font-size: .9em;
 }
 
 .schachaufgaben-knopf:focus-visible {
@@ -127,6 +172,31 @@
 	font-variant-numeric: tabular-nums;
 }
 
+/* Eigene Zeile: fett und farbig hinterlegt, damit man sich sofort findet */
 .schachaufgaben-rangliste tr.eigene td {
+	background: #e8f1f9;
 	font-weight: bold;
+}
+
+.schachaufgaben-rangliste tr.eigene td:first-child {
+	box-shadow: inset 4px 0 0 #1f6fb2;
+}
+
+/* Leerzeile zwischen den Spitzenplätzen und dem eigenen Platz weiter unten */
+.schachaufgaben-rangliste tr.luecke td {
+	border-bottom: 0;
+	padding: .2em;
+	text-align: center;
+	color: #888;
+}
+
+.schachaufgaben-rangliste .fehlen {
+	display: block;
+	font-size: .85em;
+	font-weight: normal;
+}
+
+.schachaufgaben-rangliste-hinweis {
+	font-size: .9em;
+	opacity: .8;
 }

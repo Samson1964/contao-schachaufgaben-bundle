@@ -64,6 +64,7 @@ class TrainingModule extends Module
 	protected function compile(): void
 	{
 		System::loadLanguageFile('default');
+		System::loadLanguageFile('schachaufgaben_eroeffnungen');
 
 		$container = System::getContainer();
 		$router = $container->get('router');
@@ -78,11 +79,13 @@ class TrainingModule extends Module
 		$this->Template->skript = $basis.'training.js';
 		$this->Template->texte = $GLOBALS['TL_LANG']['MSC']['schachaufgaben'] ?? array();
 		$this->Template->konfiguration = array(
-			'aufgabeUrl'  => $router->generate('schachaufgaben_aufgabe'),
-			'ergebnisUrl' => $router->generate('schachaufgaben_ergebnis'),
-			'assetsUrl'   => $basis.'vendor/cm-chessboard/assets/',
-			'texte'       => $GLOBALS['TL_LANG']['MSC']['schachaufgaben'] ?? array(),
-			'motive'      => $GLOBALS['TL_LANG']['MSC']['schachaufgaben_motive'] ?? array(),
+			'aufgabeUrl'   => $router->generate('schachaufgaben_aufgabe'),
+			'ergebnisUrl'  => $router->generate('schachaufgaben_ergebnis'),
+			'bewertungUrl' => $router->generate('schachaufgaben_bewertung'),
+			'assetsUrl'    => $basis.'vendor/cm-chessboard/assets/',
+			'texte'        => $GLOBALS['TL_LANG']['MSC']['schachaufgaben'] ?? array(),
+			'motive'       => $GLOBALS['TL_LANG']['MSC']['schachaufgaben_motive'] ?? array(),
+			'eroeffnungen' => $GLOBALS['TL_LANG']['MSC']['schachaufgaben_eroeffnungen'] ?? array(),
 		);
 	}
 }

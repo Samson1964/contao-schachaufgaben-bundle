@@ -19,9 +19,6 @@ services:
             - '../../Module/'
             - '../../Resources/'
 
-    # Befehlsname als Tag, damit die Konsole den Befehl erst beim Aufruf
-    # erzeugt. #[AsCommand] greift unter PHP 7.4 nicht, $defaultName gibt es
-    # in Symfony 7 nicht mehr — der Tag funktioniert unter beiden Fassungen.
     # Controller müssen öffentlich sein, damit der Router sie abrufen kann
     Schachbulle\ContaoSchachaufgabenBundle\Controller\TrainingController:
         public: true
@@ -36,7 +33,3 @@ services:
             $tokenName: '%contao.csrf_token_name%'
             $projektVerzeichnis: '%kernel.project_dir%'
             $uploadPfad: '%contao.upload_path%'
-
-    Schachbulle\ContaoSchachaufgabenBundle\Command\ImportCommand:
-        tags:
-            - { name: console.command, command: 'schachaufgaben:import' }

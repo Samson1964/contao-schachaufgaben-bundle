@@ -9,4 +9,6 @@ declare(strict_types=1);
  * @license LGPL-3.0-or-later
  */
 
-$GLOBALS['TL_LANG']['tl_module']['schachaufgabenMinVersuche'] = array('Mindestzahl Versuche', 'Mitglieder erscheinen erst in der Rangliste, wenn sie so viele Aufgaben gespielt haben. Vorher ist die Wertung zu unsicher.');
+$GLOBALS['TL_LANG']['tl_module']['schachaufgaben_legend'] = 'Rangliste';
+$GLOBALS['TL_LANG']['tl_module']['schachaufgabenPlaetze'] = array('Anzahl der Plätze', 'So viele Mitglieder zeigt die Rangliste; wer fehlt, sieht seinen Platz darunter.');
+$GLOBALS['TL_LANG']['tl_module']['schachaufgabenMinVersuche'] = array('Mindestzahl gespielter Aufgaben', 'Vorher ist die Wertung zu unsicher für die Rangliste.');

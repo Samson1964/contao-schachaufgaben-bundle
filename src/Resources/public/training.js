@@ -19,6 +19,7 @@ import {Chessboard, COLOR, INPUT_EVENT_TYPE, BORDER_TYPE} from "./vendor/cm-ches
 import {Markers, MARKER_TYPE} from "./vendor/cm-chessboard/src/extensions/markers/Markers.js"
 import {PromotionDialog, PROMOTION_DIALOG_RESULT_TYPE} from "./vendor/cm-chessboard/src/extensions/promotion-dialog/PromotionDialog.js"
 import {Chess} from "./vendor/chess.js/chess.js"
+import {eroeffnungUebersetzen} from "./eroeffnung.js"
 
 /** Pause zwischen den Zügen, damit der Spieler sie verfolgen kann (ms). */
 const PAUSE = 500
@@ -49,7 +50,9 @@ class SchachaufgabenTraining {
             info: element.querySelector("[data-info]"),
             gast: element.querySelector("[data-gast]"),
             loesung: element.querySelector('[data-aktion="loesung"]'),
-            naechste: element.querySelector('[data-aktion="naechste"]')
+            naechste: element.querySelector('[data-aktion="naechste"]'),
+            bewertung: element.querySelector("[data-bewertung]"),
+            stimmen: element.querySelectorAll("[data-stimme]")
         }
 
         this.brett = new Chessboard(element.querySelector(".schachaufgaben-brett"), {
@@ -60,6 +63,7 @@ class SchachaufgabenTraining {
 
         this.feld.loesung.addEventListener("click", () => this.loesungZeigen())
         this.feld.naechste.addEventListener("click", () => this.laden())
+        this.feld.stimmen.forEach(knopf => knopf.addEventListener("click", () => this.bewerten(Number(knopf.dataset.stimme))))
         this.eingabe = this.eingabe.bind(this)
 
         this.laden()
@@ -75,6 +79,8 @@ class SchachaufgabenTraining {
         this.feld.loesung.disabled = true
         this.feld.info.hidden = true
         this.feld.info.textContent = ""
+        this.feld.bewertung.hidden = true
+        this.stimmeAnzeigen(0)
         this.feld.differenz.textContent = ""
         this.status(this.texte.laden)
 
@@ -344,7 +350,7 @@ class SchachaufgabenTraining {
             zeile(this.texte.motive, aufgabe.motive.map(motiv => this.konfiguration.motive[motiv] || motiv).join(", "))
         }
         if (aufgabe.eroeffnung) {
-            zeile(this.texte.eroeffnung, aufgabe.eroeffnung)
+            zeile(this.texte.eroeffnung, eroeffnungUebersetzen(aufgabe.eroeffnung, this.konfiguration.eroeffnungen))
         }
         if (aufgabe.partieUrl) {
             const link = document.createElement("a")
@@ -357,6 +363,45 @@ class SchachaufgabenTraining {
             info.append(p)
         }
         info.hidden = false
+        this.feld.bewertung.hidden = false
+    }
+
+    /**
+     * Gibt die Stimme „Gefällt mir" (1) oder „Gefällt mir nicht" (-1) ab.
+     * Ein zweiter Klick auf dieselbe Stimme nimmt sie zurück (0).
+     *
+     * @param {number} stimme 1 oder -1 je nach Knopf
+     */
+    async bewerten(stimme) {
+        const neu = this.stimme === stimme ? 0 : stimme
+        const aufgabe = this.aufgabe
+        try {
+            const antwort = await fetch(this.konfiguration.bewertungUrl, {
+                method: "POST",
+                headers: {"Content-Type": "application/json", "Accept": "application/json", "X-Requested-With": "XMLHttpRequest"},
+                credentials: "same-origin",
+                body: JSON.stringify({id: aufgabe.id, stimme: neu})
+            })
+            if (!antwort.ok) {
+                throw new Error("HTTP " + antwort.status)
+            }
+            const ergebnis = await antwort.json()
+            if (this.aufgabe === aufgabe) {
+                this.stimmeAnzeigen(ergebnis.stimme)
+            }
+        } catch (fehler) {
+            console.error("Schachaufgaben:", fehler)
+        }
+    }
+
+    /**
+     * Markiert den Knopf der abgegebenen Stimme.
+     *
+     * @param {number} stimme 1, -1 oder 0 für keine Stimme
+     */
+    stimmeAnzeigen(stimme) {
+        this.stimme = stimme
+        this.feld.stimmen.forEach(knopf => knopf.setAttribute("aria-pressed", String(Number(knopf.dataset.stimme) === stimme)))
     }
 
     /**

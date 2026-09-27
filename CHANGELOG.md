@@ -1,5 +1,38 @@
 # Schachaufgaben-Bundle Changelog
 
+## Version 1.1.0 (2026-09-27)
+
+* Change: PHP 8.1 ist Voraussetzung (bisher 7.4). Der Konsolenbefehl meldet sich über
+  `#[AsCommand]` an, Callbacks und Hooks über `#[AsCallback]` / `#[AsHook]`.
+* Change: Beliebtheit und Spielzahl von Lichess dienen nur noch als Filter beim Import und
+  werden nicht mehr gespeichert. `spiele` zählt die Lösungsversuche auf der eigenen Website,
+  `beliebtheit` ergibt sich aus den eigenen Stimmen (neue Felder `gefaellt`, `gefaelltNicht`).
+  Eine Migration setzt die unter 1.0.0 übernommenen Lichess-Werte einmalig auf 0; sie legt
+  die Spalte `gefaellt` selbst an, damit Contao sie nicht wiederholt ausführt.
+* Add: Knöpfe „Gefällt mir" / „Gefällt mir nicht" nach dem Ende einer Aufgabe, mit Ändern und
+  Zurücknehmen der Stimme; neue Route `/_schachaufgaben/bewertung`, Stimme je Mitglied in
+  `tl_schachaufgaben_versuch.stimme`, bei Gästen in der Sitzung.
+* Add: Deutsche Namen der Eröffnungen im Training (`eroeffnung.js` mit Wörterbuch für alle
+  156 Familien der Sammlung, Variantennamen, Beugung der Beiwörter und deutsche
+  Figurenbuchstaben); gezeigt wird der genaueste Name.
+* Add: Englische Sprachdateien.
+* Add: Rangliste zeigt das angemeldete Mitglied auch außerhalb der gezeigten Plätze unter der
+  Tabelle, vor Erreichen der Mindestzahl mit den noch fehlenden Aufgaben; eigene Zeile farbig
+  hervorgehoben.
+* Add: Beim Löschen eines Mitglieds (Backend oder „Konto schließen" mit Löschen) werden seine
+  Wertung und Versuche mitgelöscht.
+* Add: FEN und Züge werden beim Speichern im Backend nach den Regeln des Imports geprüft.
+* Add: Tests für die Übersetzungen (alle Motive in beiden Sprachen, alle Eröffnungsfamilien,
+  gleiche Schlüssel in Deutsch und Englisch) und für `eroeffnung.js` (Node.js).
+* Change: Rangliste mit eigenen Feldern „Anzahl der Plätze" und „Mindestzahl gespielter
+  Aufgaben" in der Legende „Rangliste" statt `numberOfItems` in der Kern-Legende, die andere
+  Erweiterungen umbeschriften (etwa zu „Forum-Einstellungen").
+* Fix: Knöpfe im Training mit festen Farben für alle Zustände; manche Themes setzten beim
+  Überfahren nur einen dunklen Hintergrund, die Schrift blieb schwarz.
+* Fix: Meldungen und Fortschrittsanzeige der Importseite mit demselben Seitenabstand wie die
+  Formularfelder.
+* Fix: Motive, die erst 2026 in die Sammlung kamen (etwa `blindSwineMate`), sind übersetzt.
+
 ## Version 1.0.0 (2026-09-27)
 
 * Add: Grundgerüst des Bundles für Contao 4.13 und 5.7: `composer.json`, Contao-Manager-Plugin,

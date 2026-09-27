@@ -1,4 +1,10 @@
 <?php $t = $this->texte; ?>
+<style>
+  /* Meldungen mit demselben Seitenabstand wie die Formularfelder */
+  #schachaufgaben-import .schachaufgaben-abstand { margin: 0 15px 12px; }
+  #schachaufgaben-import [data-fortschritt] { padding: 12px 15px; }
+  #schachaufgaben-import [data-fortschritt] p { margin: 0 0 8px; }
+</style>
 <div id="tl_buttons">
   <a href="<?= $this->zurueck ?>" class="header_back" title="<?= Contao\StringUtil::specialchars($t['zurueck']) ?>" accesskey="b"><?= $t['zurueck'] ?></a>
 </div>
@@ -7,10 +13,10 @@
   <div class="tl_formbody_edit">
 
     <div class="tl_tbox">
-      <p class="tl_info" style="margin-bottom:12px"><?= sprintf($t['anleitung'], $this->uploadPfad) ?></p>
+      <p class="tl_info schachaufgaben-abstand"><?= sprintf($t['anleitung'], $this->uploadPfad) ?></p>
 
       <?php if ($this->offen): ?>
-        <div class="tl_confirm" data-offen style="margin-bottom:12px">
+        <div class="tl_confirm schachaufgaben-abstand" data-offen>
           <?= sprintf($t['offen'], Contao\StringUtil::specialchars($this->offen['datei']), number_format($this->offen['prozent'], 1, ',', '.')) ?>
           <button type="button" class="tl_submit" data-aktion="fortsetzen"><?= $t['fortsetzen'] ?></button>
           <button type="button" class="tl_submit" data-aktion="verwerfen"><?= $t['verwerfen'] ?></button>
@@ -18,7 +24,7 @@
       <?php endif; ?>
 
       <?php if (empty($this->dateien)): ?>
-        <p class="tl_error"><?= sprintf($t['keineDateien'], $this->uploadPfad) ?></p>
+        <p class="tl_error schachaufgaben-abstand"><?= sprintf($t['keineDateien'], $this->uploadPfad) ?></p>
       <?php else: ?>
         <div class="widget">
           <h3><label for="schachaufgaben-datei"><?= $t['datei'] ?></label></h3>

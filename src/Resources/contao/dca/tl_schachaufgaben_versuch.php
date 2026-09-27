@@ -77,6 +77,11 @@ $GLOBALS['TL_DCA']['tl_schachaufgaben_versuch'] = array
 		'wertungNachher' => array
 		(
 			'sql' => "smallint(5) unsigned NOT NULL default '0'",
+		),
+		// Bewertung der Aufgabe: 1 gefällt, -1 gefällt nicht, 0 keine Stimme
+		'stimme' => array
+		(
+			'sql' => "smallint(1) NOT NULL default '0'",
 		)
 	)
 );

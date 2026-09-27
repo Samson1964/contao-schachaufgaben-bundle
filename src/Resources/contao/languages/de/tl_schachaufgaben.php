@@ -12,6 +12,7 @@ declare(strict_types=1);
 // Legenden
 $GLOBALS['TL_LANG']['tl_schachaufgaben']['aufgabe_legend'] = 'Aufgabe';
 $GLOBALS['TL_LANG']['tl_schachaufgaben']['wertung_legend'] = 'Wertung';
+$GLOBALS['TL_LANG']['tl_schachaufgaben']['statistik_legend'] = 'Statistik dieser Website';
 $GLOBALS['TL_LANG']['tl_schachaufgaben']['quelle_legend'] = 'Herkunft';
 $GLOBALS['TL_LANG']['tl_schachaufgaben']['publish_legend'] = 'Veröffentlichung';
 
@@ -22,8 +23,10 @@ $GLOBALS['TL_LANG']['tl_schachaufgaben']['motive'] = array('Motive', 'Motive im 
 $GLOBALS['TL_LANG']['tl_schachaufgaben']['wertung'] = array('Wertungszahl', 'Schwierigkeit der Aufgabe als Glicko-2-Wertungszahl.');
 $GLOBALS['TL_LANG']['tl_schachaufgaben']['wertungAbweichung'] = array('Abweichung', 'Unsicherheit der Wertungszahl (Glicko-2-RD). Je kleiner, desto verlässlicher.');
 $GLOBALS['TL_LANG']['tl_schachaufgaben']['wertungVolatilitaet'] = array('Volatilität', 'Glicko-2-Volatilität. Nur ändern, wenn Sie wissen, was Sie tun.');
-$GLOBALS['TL_LANG']['tl_schachaufgaben']['beliebtheit'] = array('Beliebtheit', 'Bewertung durch die Spieler von -100 (unbeliebt) bis 100 (beliebt).');
-$GLOBALS['TL_LANG']['tl_schachaufgaben']['spiele'] = array('Spiele', 'Wie oft die Aufgabe bereits gespielt wurde.');
+$GLOBALS['TL_LANG']['tl_schachaufgaben']['beliebtheit'] = array('Beliebtheit', '100 × (Gefällt mir − Gefällt mir nicht) ÷ Stimmen, also von -100 (alle dagegen) bis 100 (alle dafür). Wird vom Training berechnet.');
+$GLOBALS['TL_LANG']['tl_schachaufgaben']['gefaellt'] = array('Gefällt mir', 'Anzahl der Stimmen „Gefällt mir“.');
+$GLOBALS['TL_LANG']['tl_schachaufgaben']['gefaelltNicht'] = array('Gefällt mir nicht', 'Anzahl der Stimmen „Gefällt mir nicht“.');
+$GLOBALS['TL_LANG']['tl_schachaufgaben']['spiele'] = array('Lösungsversuche', 'Wie oft die Aufgabe auf dieser Website gespielt wurde, von Mitgliedern und Gästen.');
 $GLOBALS['TL_LANG']['tl_schachaufgaben']['quelle'] = array('Quelle', 'Woher die Aufgabe stammt.');
 $GLOBALS['TL_LANG']['tl_schachaufgaben']['lichessId'] = array('Lichess-Kennung', 'Kennung der Aufgabe bei Lichess. Leer bei eigenen Aufgaben.');
 $GLOBALS['TL_LANG']['tl_schachaufgaben']['partieUrl'] = array('Herkunftspartie', 'Adresse der Partie, aus der die Aufgabe stammt.');
@@ -56,14 +59,14 @@ $GLOBALS['TL_LANG']['tl_schachaufgaben']['import_seite'] = array
 	'keineDateien'       => 'In <code>%s</code> liegt keine CSV-Datei.',
 	'datei'              => 'CSV-Datei',
 	'filter_legend'      => 'Auswahl',
-	'minBeliebtheit'     => array('Mindest-Beliebtheit', 'Von -100 bis 100. Empfohlen: 80.'),
-	'minSpiele'          => array('Mindestens gespielt', 'Wie oft die Aufgabe bei Lichess mindestens gespielt wurde. Empfohlen: 1000.'),
+	'minBeliebtheit'     => array('Beliebtheit bei Lichess ab', 'Von -100 bis 100, empfohlen 80. Nur zur Auswahl.'),
+	'minSpiele'          => array('Bei Lichess gespielt ab', 'Empfohlen 1000. Nur zur Auswahl.'),
 	'minWertung'         => array('Wertung ab', 'Leer lassen für keine Untergrenze.'),
 	'maxWertung'         => array('Wertung bis', 'Leer lassen für keine Obergrenze.'),
 	'motive'             => array('Motive', 'Lichess-Namen, z. B. „fork mateIn2". Leer = alle.'),
 	'limit'              => array('Höchstens', 'So viele Aufgaben übernehmen. Leer = alle.'),
 	'optionen_legend'    => 'Vorhandene Aufgaben',
-	'aktualisieren'      => array('Vorhandene Aufgaben aktualisieren', 'Stellung, Züge, Motive und Lichess-Zähler neu übernehmen. Sonst werden vorhandene Aufgaben übersprungen.'),
+	'aktualisieren'      => array('Vorhandene Aufgaben aktualisieren', 'Stellung, Züge, Motive, Eröffnung und Herkunftspartie neu übernehmen. Sonst werden vorhandene Aufgaben übersprungen.'),
 	'wertungUebernehmen' => array('Dabei auch die Wertung übernehmen', 'Überschreibt die im eigenen Training entstandene Wertung der Aufgaben.'),
 	'unveroeffentlicht'  => array('Neue Aufgaben nicht veröffentlichen', 'Die Aufgaben erscheinen erst im Training, wenn sie freigeschaltet sind.'),
 	'starten'            => 'Import starten',

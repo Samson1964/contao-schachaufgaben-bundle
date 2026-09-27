@@ -2,7 +2,7 @@
 
 <?php $this->block('content'); ?>
 
-  <?php if (empty($this->liste)): ?>
+  <?php if (empty($this->liste) && !$this->eigene): ?>
     <p class="empty"><?= sprintf($this->texte['leer'], $this->minVersuche) ?></p>
   <?php else: ?>
     <table class="schachaufgaben-rangliste">
@@ -26,7 +26,29 @@
           </tr>
         <?php endforeach; ?>
       </tbody>
+      <?php if ($eigene = $this->eigene): ?>
+        <tfoot>
+          <?php if ($this->luecke): ?>
+            <tr class="luecke" aria-hidden="true"><td colspan="5">⋮</td></tr>
+          <?php endif; ?>
+          <tr class="eigene" aria-current="true">
+            <td class="platz"><?= $eigene['platz'] ?? '–' ?></td>
+            <td class="name">
+              <?= Contao\StringUtil::specialchars($eigene['name']) ?>
+              <?php if ($eigene['fehlen'] > 0): ?>
+                <span class="fehlen"><?= 1 === $eigene['fehlen'] ? $this->texte['nochNichtGewertetEins'] : sprintf($this->texte['nochNichtGewertet'], $eigene['fehlen']) ?></span>
+              <?php endif; ?>
+            </td>
+            <td class="wertung"><?= $eigene['wertung'] ?></td>
+            <td class="versuche"><?= $eigene['versuche'] ?></td>
+            <td class="quote"><?= $eigene['quote'] ?> %</td>
+          </tr>
+        </tfoot>
+      <?php endif; ?>
     </table>
+    <?php if ($this->minVersuche > 0): ?>
+      <p class="schachaufgaben-rangliste-hinweis"><?= sprintf($this->texte['mindestensHinweis'], $this->minVersuche) ?></p>
+    <?php endif; ?>
   <?php endif; ?>
 
 <?php $this->endblock(); ?>

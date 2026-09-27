@@ -16,3 +16,11 @@ schachaufgaben_ergebnis:
     defaults:
         _scope: frontend
         _token_check: false
+
+schachaufgaben_bewertung:
+    path: /_schachaufgaben/bewertung
+    controller: Schachbulle\ContaoSchachaufgabenBundle\Controller\TrainingController::bewertung
+    methods: [POST]
+    defaults:
+        _scope: frontend
+        _token_check: false

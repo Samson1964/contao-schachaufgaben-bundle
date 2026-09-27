@@ -98,6 +98,36 @@ class TrainingController
 	}
 
 	/**
+	 * Nimmt eine Bewertung entgegen (POST, JSON {id, stimme}).
+	 *
+	 * @param Request $request Die Anfrage
+	 *
+	 * @return JsonResponse Stimme und Zähler der Aufgabe; 415 bei falschem
+	 *                      Inhaltstyp, 400 bei unvollständigen Daten, 409 wenn
+	 *                      die Aufgabe (noch) nicht bewertet werden darf
+	 */
+	public function bewertung(Request $request): JsonResponse
+	{
+		if (!str_starts_with((string) $request->headers->get('Content-Type'), 'application/json')) {
+			return $this->antwort(array('fehler' => 'Erwartet wird application/json.'), 415);
+		}
+
+		$daten = json_decode((string) $request->getContent(), true);
+
+		if (!\is_array($daten) || !\is_int($daten['id'] ?? null) || !\in_array($daten['stimme'] ?? null, array(-1, 0, 1), true)) {
+			return $this->antwort(array('fehler' => 'Erwartet werden id (Zahl) und stimme (1, 0 oder -1).'), 400);
+		}
+
+		$ergebnis = $this->training->bewerten($this->memberId(), $request->getSession(), $daten['id'], $daten['stimme']);
+
+		if (null === $ergebnis) {
+			return $this->antwort(array('fehler' => 'Diese Aufgabe kann (noch) nicht bewertet werden.'), 409);
+		}
+
+		return $this->antwort($ergebnis);
+	}
+
+	/**
 	 * Ermittelt das angemeldete Mitglied.
 	 *
 	 * @return int|null Die ID aus tl_member, oder null für Gäste (auch wenn

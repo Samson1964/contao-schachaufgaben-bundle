@@ -15,6 +15,7 @@ use Schachbulle\ContaoSchachaufgabenBundle\Import\AufgabenPruefer;
 use Schachbulle\ContaoSchachaufgabenBundle\Import\AufgabenSchreiber;
 use Schachbulle\ContaoSchachaufgabenBundle\Import\ImportFilter;
 use Schachbulle\ContaoSchachaufgabenBundle\Import\LichessCsvLeser;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -25,10 +26,11 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 /**
  * Konsolenbefehl schachaufgaben:import für die Lichess-Aufgabensammlung.
  *
- * Der Befehlsname steht zusätzlich als Tag in der services.yaml. Das
- * Attribut #[AsCommand] würde unter PHP 7.4 (Contao 4.13) nicht ausgewertet,
- * und die statische Eigenschaft $defaultName gibt es in Symfony 7 nicht mehr.
+ * Name und Beschreibung stehen im Attribut #[AsCommand], das Symfony 5.4
+ * (Contao 4.13) wie Symfony 7 (Contao 5.7) auswertet; die Konsole erzeugt den
+ * Befehl dadurch erst, wenn er aufgerufen wird.
  */
+#[AsCommand(name: 'schachaufgaben:import', description: 'Importiert Aufgaben aus der Lichess-Aufgabensammlung (lichess_db_puzzle.csv).')]
 class ImportCommand extends Command
 {
 	private LichessCsvLeser $leser;
@@ -50,7 +52,7 @@ class ImportCommand extends Command
 		$this->pruefer = $pruefer;
 		$this->schreiber = $schreiber;
 
-		parent::__construct('schachaufgaben:import');
+		parent::__construct();
 	}
 
 	/**
@@ -59,10 +61,9 @@ class ImportCommand extends Command
 	protected function configure(): void
 	{
 		$this
-			->setDescription('Importiert Aufgaben aus der Lichess-Aufgabensammlung (lichess_db_puzzle.csv).')
 			->addArgument('datei', InputArgument::REQUIRED, 'Pfad zur entpackten CSV-Datei, oder „-" für die Standardeingabe')
-			->addOption('min-beliebtheit', null, InputOption::VALUE_REQUIRED, 'Nur Aufgaben mit mindestens dieser Beliebtheit (-100 bis 100)', '-100')
-			->addOption('min-spiele', null, InputOption::VALUE_REQUIRED, 'Nur Aufgaben, die bei Lichess mindestens so oft gespielt wurden', '0')
+			->addOption('min-beliebtheit', null, InputOption::VALUE_REQUIRED, 'Nur Aufgaben mit mindestens dieser Beliebtheit bei Lichess (-100 bis 100; dient nur der Auswahl, gespeichert wird die eigene Statistik)', '-100')
+			->addOption('min-spiele', null, InputOption::VALUE_REQUIRED, 'Nur Aufgaben, die bei Lichess mindestens so oft gespielt wurden (dient nur der Auswahl)', '0')
 			->addOption('min-wertung', null, InputOption::VALUE_REQUIRED, 'Untergrenze der Wertungszahl', '0')
 			->addOption('max-wertung', null, InputOption::VALUE_REQUIRED, 'Obergrenze der Wertungszahl', '9999')
 			->addOption('motiv', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Nur Aufgaben mit diesem Motiv (mehrfach angebbar, eines genügt)')

@@ -14,13 +14,23 @@ declare(strict_types=1);
  *
  * Verwendet werden nur Kernfelder, die es in Contao 4.13 und 5.7 gleichermaßen
  * gibt; „guests" und „space" fehlen in Contao 5 und würden die Palette dort
- * abbrechen lassen.
+ * abbrechen lassen. Die Rangliste hat eigene Felder in einer eigenen Legende:
+ * Die Kern-Legende „config_legend" und das Feld „numberOfItems" werden von
+ * anderen Erweiterungen umbeschriftet (etwa zu „Forum-Einstellungen").
  */
 $GLOBALS['TL_DCA']['tl_module']['palettes']['schachaufgaben_training']
 	= '{title_legend},name,headline,type;{template_legend:hide},customTpl;{protected_legend:hide},protected;{expert_legend:hide},cssID';
 
 $GLOBALS['TL_DCA']['tl_module']['palettes']['schachaufgaben_rangliste']
-	= '{title_legend},name,headline,type;{config_legend},numberOfItems,schachaufgabenMinVersuche;{template_legend:hide},customTpl;{protected_legend:hide},protected;{expert_legend:hide},cssID';
+	= '{title_legend},name,headline,type;{schachaufgaben_legend},schachaufgabenPlaetze,schachaufgabenMinVersuche;{template_legend:hide},customTpl;{protected_legend:hide},protected;{expert_legend:hide},cssID';
+
+$GLOBALS['TL_DCA']['tl_module']['fields']['schachaufgabenPlaetze'] = array
+(
+	'exclude'   => true,
+	'inputType' => 'text',
+	'eval'      => array('rgxp' => 'natural', 'minval' => 1, 'maxlength' => 4, 'tl_class' => 'w50'),
+	'sql'       => "smallint(5) unsigned NOT NULL default '20'",
+);
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['schachaufgabenMinVersuche'] = array
 (

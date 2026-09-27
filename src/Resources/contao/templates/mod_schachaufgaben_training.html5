@@ -15,6 +15,12 @@
 
       <div class="schachaufgaben-info" data-info hidden></div>
 
+      <div class="schachaufgaben-bewertung" data-bewertung hidden>
+        <span class="schachaufgaben-bewertung__frage"><?= $this->texte['bewertenFrage'] ?></span>
+        <button type="button" class="schachaufgaben-knopf schachaufgaben-knopf--klein" data-stimme="1" aria-pressed="false">👍 <?= $this->texte['gefaellt'] ?></button>
+        <button type="button" class="schachaufgaben-knopf schachaufgaben-knopf--klein" data-stimme="-1" aria-pressed="false">👎 <?= $this->texte['gefaelltNicht'] ?></button>
+      </div>
+
       <div class="schachaufgaben-knoepfe">
         <button type="button" class="schachaufgaben-knopf" data-aktion="loesung" disabled><?= $this->texte['loesungZeigen'] ?></button>
         <button type="button" class="schachaufgaben-knopf schachaufgaben-knopf--haupt" data-aktion="naechste" hidden><?= $this->texte['naechste'] ?></button>

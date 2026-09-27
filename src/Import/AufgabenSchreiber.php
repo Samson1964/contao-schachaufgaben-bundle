@@ -25,10 +25,14 @@ class AufgabenSchreiber
 {
 	/**
 	 * Felder in der Reihenfolge der Platzhalter im INSERT.
+	 *
+	 * Beliebtheit und Spielzahl von Lichess fehlen bewusst: Sie dienen nur als
+	 * Filter beim Import. Die Tabelle führt dafür die eigene Statistik der
+	 * Website, die bei neuen Aufgaben mit 0 beginnt.
 	 */
 	private const FELDER = array(
 		'tstamp', 'quelle', 'published', 'lichessId', 'fen', 'zuege', 'motive',
-		'wertung', 'wertungAbweichung', 'beliebtheit', 'spiele', 'partieUrl', 'eroeffnung',
+		'wertung', 'wertungAbweichung', 'partieUrl', 'eroeffnung',
 	);
 
 	/**
@@ -36,7 +40,7 @@ class AufgabenSchreiber
 	 * Wertungsfelder gehören nicht dazu, sobald das Bundle selbst wertet —
 	 * dafür gibt es die Option $wertungUebernehmen.
 	 */
-	private const AKTUALISIEREN = array('fen', 'zuege', 'motive', 'beliebtheit', 'spiele', 'partieUrl', 'eroeffnung');
+	private const AKTUALISIEREN = array('fen', 'zuege', 'motive', 'partieUrl', 'eroeffnung');
 
 	private const WERTUNGSFELDER = array('wertung', 'wertungAbweichung');
 

@@ -114,7 +114,7 @@ $GLOBALS['TL_DCA']['tl_schachaufgaben'] = array
 
 	'palettes' => array
 	(
-		'default' => '{aufgabe_legend},fen,zuege,motive;{wertung_legend},wertung,wertungAbweichung,wertungVolatilitaet,beliebtheit,spiele;{quelle_legend},quelle,lichessId,partieUrl,eroeffnung;{publish_legend},published',
+		'default' => '{aufgabe_legend},fen,zuege,motive;{wertung_legend},wertung,wertungAbweichung,wertungVolatilitaet;{statistik_legend},spiele,beliebtheit,gefaellt,gefaelltNicht;{quelle_legend},quelle,lichessId,partieUrl,eroeffnung;{publish_legend},published',
 	),
 
 	'fields' => array
@@ -175,23 +175,44 @@ $GLOBALS['TL_DCA']['tl_schachaufgaben'] = array
 			'eval'      => array('rgxp' => 'digit', 'maxlength' => 10, 'tl_class' => 'w50'),
 			'sql'       => "double NOT NULL default '0.06'",
 		),
-		// Lichess-Beliebtheit von -100 (unbeliebt) bis 100 (beliebt)
+		// Eigene Statistik der Website; die Werte von Lichess dienen nur als
+		// Filter beim Import und werden nicht gespeichert. Die Felder führt das
+		// Training selbst, im Backend sind sie deshalb nur lesbar.
+		//
+		// Beliebtheit wie bei Lichess: 100 × (gefällt − gefällt nicht) / Stimmen,
+		// also von -100 (alle dagegen) bis 100 (alle dafür), unabhängig davon,
+		// wie viele abgestimmt haben.
 		'beliebtheit' => array
 		(
 			'exclude'   => true,
 			'sorting'   => true,
 			'flag'      => DataContainer::SORT_ASC,
 			'inputType' => 'text',
-			'eval'      => array('rgxp' => 'digit', 'maxlength' => 4, 'tl_class' => 'w50'),
+			'eval'      => array('readonly' => true, 'tl_class' => 'w50'),
 			'sql'       => "smallint(5) NOT NULL default '0'",
 		),
+		'gefaellt' => array
+		(
+			'exclude'   => true,
+			'inputType' => 'text',
+			'eval'      => array('readonly' => true, 'tl_class' => 'w50'),
+			'sql'       => "int(10) unsigned NOT NULL default '0'",
+		),
+		'gefaelltNicht' => array
+		(
+			'exclude'   => true,
+			'inputType' => 'text',
+			'eval'      => array('readonly' => true, 'tl_class' => 'w50'),
+			'sql'       => "int(10) unsigned NOT NULL default '0'",
+		),
+		// Lösungsversuche auf dieser Website, von Mitgliedern und Gästen
 		'spiele' => array
 		(
 			'exclude'   => true,
 			'sorting'   => true,
 			'flag'      => DataContainer::SORT_ASC,
 			'inputType' => 'text',
-			'eval'      => array('rgxp' => 'natural', 'maxlength' => 10, 'tl_class' => 'w50'),
+			'eval'      => array('readonly' => true, 'tl_class' => 'w50'),
 			'sql'       => "int(10) unsigned NOT NULL default '0'",
 		),
 		'quelle' => array

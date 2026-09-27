@@ -1,7 +1,7 @@
 # Schachaufgaben-Bundle für Contao
 
 Schachaufgaben-Training nach dem Vorbild von [lichess.org/training](https://lichess.org/training)
-für Contao 4.13 und Contao 5.7 (PHP 7.4 bis 8.4).
+für Contao 4.13 und Contao 5.7 (PHP 8.1 bis 8.4).
 
 > **Stand:** Aufgabentabelle, Import der Lichess-Sammlung im Backend und per Konsole,
 > Training im Frontend mit Glicko-2-Wertung und Rangliste.
@@ -12,11 +12,14 @@ Unter **Themes → Frontend-Module**, Gruppe „Schachaufgaben":
 
 * **Schachaufgaben-Training** – Brett mit Zugeingabe per Klick oder Ziehen (auch auf dem
   Handy), Anzeige der eigenen Wertung, Knöpfe „Lösung zeigen" und „Nächste Aufgabe".
-  Nach Ende einer Aufgabe erscheinen ihre Wertung, die Motive auf Deutsch, die Eröffnung
-  und ein Link zur Herkunftspartie.
+  Nach Ende einer Aufgabe erscheinen ihre Wertung, die Motive und die Eröffnung auf Deutsch
+  und ein Link zur Herkunftspartie, dazu die Knöpfe „Gefällt mir" und „Gefällt mir nicht".
 * **Schachaufgaben-Rangliste** – die Mitglieder mit der höchsten Wertung, Name als
   „Vorname N.". Einstellbar: Anzahl der Plätze und Mindestzahl gespielter Aufgaben
-  (Standard 20). Das angemeldete Mitglied wird hervorgehoben.
+  (Standard 20), in einer eigenen Legende „Rangliste". Das angemeldete Mitglied wird
+  hervorgehoben; steht es nicht unter den gezeigten Plätzen, erscheint es mit seinem
+  tatsächlichen Platz unter der Tabelle, vor Erreichen der Mindestzahl mit dem Hinweis, wie
+  viele Aufgaben bis zur Wertung fehlen.
 
 Für angemeldete Mitglieder gehört ein Anmeldemodul von Contao auf die Seite; ohne
 Anmeldung wird als Gast gespielt.
@@ -46,20 +49,49 @@ Anmeldung wird als Gast gespielt.
   verfälschen können.
 * Gäste behalten ihre Wertung nur für die Sitzung und erscheinen nicht in der Rangliste.
 
+### Eigene Statistik und Bewertung
+
+Beliebtheit und Spielzahl von Lichess dienen nur als **Filter beim Import** und werden nicht
+gespeichert. Die Website führt ihre eigene Statistik:
+
+* `spiele` zählt die Lösungsversuche auf dieser Website, von Mitgliedern und Gästen.
+* Nach dem Ende einer Aufgabe kann man sie mit „Gefällt mir" oder „Gefällt mir nicht"
+  bewerten, die Stimme ändern oder durch einen zweiten Klick zurücknehmen. Je Mitglied und
+  Aufgabe zählt eine Stimme (bei Gästen je Sitzung).
+* `beliebtheit` = 100 × (Gefällt mir − Gefällt mir nicht) ÷ Stimmen, also von -100 (alle
+  dagegen) bis 100 (alle dafür). Die Spanne ist dieselbe wie bei Lichess: Sie ist ein Anteil,
+  keine Summe, und macht Aufgaben mit wenigen und vielen Stimmen vergleichbar.
+
+Beim Update von 1.0.0 setzt eine Migration die dort übernommenen Lichess-Werte einmalig auf 0.
+
+### Eröffnungen
+
+Die Eröffnungsnamen von Lichess (etwa `Sicilian_Defense_Najdorf_Variation`) werden im
+Training übersetzt: „Sizilianische Verteidigung: Najdorf-Variante". Das Wörterbuch in
+`languages/de/schachaufgaben_eroeffnungen.php` kennt alle 156 Familien der Sammlung, häufige
+Variantennamen und die Beugung von Beiwörtern; Eigennamen bleiben stehen, Züge bekommen
+deutsche Figurenbuchstaben („Bd3" wird „Ld3"). In anderen Sprachen erscheint der englische Name.
+
 ### Technik
 
 Das Brett ist [cm-chessboard](https://github.com/shaack/cm-chessboard) 8.14.2 (MIT), die
 Zugprüfung [chess.js](https://github.com/jhlywa/chess.js) 1.4.0 (BSD-2-Clause). Beide liegen
 unverändert (nur ohne Source-Map-Verweise) unter `src/Resources/public/vendor/` samt
-Lizenzdatei. Das Frontend spricht über zwei Routen mit dem Server:
+Lizenzdatei. Das Frontend spricht über drei Routen mit dem Server:
 
 | Route | Zweck |
 | --- | --- |
 | `GET /_schachaufgaben/aufgabe` | nächste Aufgabe stellen |
 | `POST /_schachaufgaben/ergebnis` | Ergebnis melden, JSON `{"id": 123, "geloest": true}` |
+| `POST /_schachaufgaben/bewertung` | Aufgabe bewerten, JSON `{"id": 123, "stimme": 1}` (1, -1 oder 0) |
 
-Das Ergebnis wird nur als `application/json` angenommen (Schutz vor fremden Formularen) und
-nur für eine gestellte, noch nicht gewertete Aufgabe.
+Ergebnis und Bewertung werden nur als `application/json` angenommen (Schutz vor fremden
+Formularen); das Ergebnis nur für eine gestellte, noch nicht gewertete Aufgabe, die Bewertung
+erst nach dem Ergebnis.
+
+Beim Löschen eines Mitglieds (Backend oder Frontend-Modul „Konto schließen" mit Löschen)
+werden seine Wertung und Versuche mitgelöscht. Im Backend werden FEN und Züge beim Speichern
+nach denselben Regeln wie beim Import geprüft.
 
 ## Aufbau einer Aufgabe
 
@@ -68,7 +100,7 @@ nur für eine gestellte, noch nicht gewertete Aufgabe.
 | `fen` | Stellung **vor** dem ersten Zug |
 | `zuege` | UCI-Züge, durch Leerzeichen getrennt. Der erste ist der Gegnerzug, der die Aufgabe auslöst; danach wechseln Lösung und Antwort. |
 | `wertung`, `wertungAbweichung`, `wertungVolatilitaet` | Schwierigkeit nach Glicko-2 |
-| `beliebtheit`, `spiele` | Lichess-Beliebtheit (-100 bis 100) und Zahl der Versuche |
+| `spiele`, `beliebtheit`, `gefaellt`, `gefaelltNicht` | eigene Statistik der Website (siehe oben) |
 | `motive`, `eroeffnung` | Motive und Eröffnung im Lichess-Format |
 | `quelle`, `lichessId`, `partieUrl` | Herkunft; `lichessId` ist eindeutig und unterscheidet Groß- und Kleinschreibung |
 
@@ -110,7 +142,7 @@ zstd -dc lichess_db_puzzle.csv.zst | php vendor/bin/contao-console schachaufgabe
 
 | Option | Wirkung |
 | --- | --- |
-| `--min-beliebtheit=N` | nur Aufgaben mit mindestens dieser Beliebtheit (-100 bis 100) |
+| `--min-beliebtheit=N` | nur Aufgaben mit mindestens dieser Beliebtheit bei Lichess (-100 bis 100) |
 | `--min-spiele=N` | nur Aufgaben, die bei Lichess mindestens N-mal gespielt wurden |
 | `--min-wertung=N`, `--max-wertung=N` | Schwierigkeitsbereich |
 | `--motiv=NAME` | nur Aufgaben mit diesem Motiv, mehrfach angebbar (eines genügt), z. B. `--motiv=fork --motiv=mateIn2` |
@@ -149,20 +181,19 @@ vendor/bin/phpunit
 ```
 
 Ohne installierte Abhängigkeiten läuft die Testsuite auch mit einem eigenständigen PHPUnit 9.6,
-weil `tests/bootstrap.php` dann einen eigenen Autoloader registriert.
+weil `tests/bootstrap.php` dann einen eigenen Autoloader registriert. Sie prüft unter anderem,
+dass alle Motive und Eröffnungsfamilien der Lichess-Sammlung übersetzt sind.
 
-## Geplanter Umfang
+Die Übersetzung der Eröffnungen hat eigene Tests für Node.js; sie liest das Wörterbuch über PHP
+aus der Sprachdatei:
 
-* Aufgaben in der Tabelle `tl_schachaufgaben`: Ausgangsstellung (FEN), Lösungszüge,
-  Schwierigkeit als Wertungszahl und Motive (Gabel, Fesselung, Matt in 2 …).
-* Import der gemeinfreien Aufgabensammlung von Lichess (CC0,
-  [database.lichess.org](https://database.lichess.org/#puzzles)) per Konsolenbefehl,
-  mit Filtern nach Beliebtheit, Anzahl der Spiele und Schwierigkeit.
-* Zusätzlicher Import eigener Aufgaben als PGN mit `[FEN]`-Kopf.
-* Spiel als angemeldetes Mitglied (mit dauerhafter Wertung) oder als Gast (Wertung nur
-  für die Sitzung).
-* Wertung nach Glicko-2 für Spieler und Aufgaben.
-* Ranglisten der Mitglieder.
+```bash
+node --test tests/js/eroeffnung.test.mjs
+```
+
+## Geplant
+
+* Import eigener Aufgaben als PGN mit `[FEN]`-Kopf.
 
 ## Installation
 

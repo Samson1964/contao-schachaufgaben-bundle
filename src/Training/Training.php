@@ -36,6 +36,8 @@ class Training
 
 	private const SITZUNG_OFFEN = 'schachaufgaben_offen';
 
+	private const SITZUNG_STIMMEN = 'schachaufgaben_stimmen';
+
 	/**
 	 * Obergrenze der Merkliste eines Gastes, damit die Sitzung nicht
 	 * unbegrenzt wächst. Die ältesten Einträge fallen zuerst heraus.
@@ -172,10 +174,89 @@ class Training
 			'aufgabe'        => array(
 				'wertung'    => (int) $aufgabe['wertung'],
 				'motive'     => preg_split('/\s+/', trim((string) $aufgabe['motive']), -1, PREG_SPLIT_NO_EMPTY),
-				'eroeffnung' => str_replace('_', ' ', (string) $aufgabe['eroeffnung']),
+				// Die Übersetzung übernimmt eroeffnung.js mit dem Wörterbuch aus der Sprachdatei
+				'eroeffnung' => (string) $aufgabe['eroeffnung'],
 				'partieUrl'  => (string) $aufgabe['partieUrl'],
 				'lichessId'  => (string) $aufgabe['lichessId'],
 			),
+		);
+	}
+
+	/**
+	 * Nimmt eine Bewertung „Gefällt mir" / „Gefällt mir nicht" entgegen.
+	 *
+	 * Jeder Spieler hat je Aufgabe eine Stimme, die er ändern oder mit 0
+	 * zurücknehmen kann. Die Zähler der Aufgabe werden um die Differenz zur
+	 * bisherigen Stimme verschoben und die Beliebtheit im selben UPDATE neu
+	 * berechnet; MySQL und MariaDB werten die Zuweisungen von links nach
+	 * rechts aus, die Formel sieht also schon die neuen Zähler.
+	 *
+	 * Abstimmen darf nur, wer die Aufgabe abgeschlossen hat: Mitglieder brauchen
+	 * einen gewerteten Eintrag in tl_schachaufgaben_versuch, Gäste die Aufgabe
+	 * in ihrer Merkliste, ohne dass sie noch offen ist.
+	 *
+	 * @param int|null         $memberId  ID des Mitglieds, oder null für Gäste
+	 * @param SessionInterface $session   Die Sitzung
+	 * @param int              $aufgabeId ID der Aufgabe
+	 * @param int              $stimme    1 gefällt, -1 gefällt nicht, 0 zurücknehmen
+	 *
+	 * @return array<string, int>|null Stimme und neue Zähler der Aufgabe, oder
+	 *                                 null wenn der Spieler (noch) nicht
+	 *                                 abstimmen darf
+	 */
+	public function bewerten(?int $memberId, SessionInterface $session, int $aufgabeId, int $stimme): ?array
+	{
+		$stimme = max(-1, min(1, $stimme));
+
+		if (null !== $memberId) {
+			$alt = $this->connection->fetchOne(
+				"SELECT stimme FROM tl_schachaufgaben_versuch WHERE memberId=? AND aufgabe=? AND gewertet='1'",
+				array($memberId, $aufgabeId)
+			);
+
+			if (false === $alt) {
+				return null;
+			}
+
+			$alt = (int) $alt;
+		} else {
+			$gesehen = (array) $session->get(self::SITZUNG_GESEHEN, array());
+
+			if (!\in_array($aufgabeId, $gesehen, true) || (int) $session->get(self::SITZUNG_OFFEN, 0) === $aufgabeId) {
+				return null;
+			}
+
+			$stimmen = (array) $session->get(self::SITZUNG_STIMMEN, array());
+			$alt = (int) ($stimmen[$aufgabeId] ?? 0);
+		}
+
+		if ($alt !== $stimme) {
+			$this->connection->executeStatement(
+				'UPDATE tl_schachaufgaben
+				 SET gefaellt = gefaellt + ?, gefaelltNicht = gefaelltNicht + ?,
+				     beliebtheit = IF(gefaellt + gefaelltNicht = 0, 0, ROUND(100 * (CAST(gefaellt AS SIGNED) - CAST(gefaelltNicht AS SIGNED)) / (gefaellt + gefaelltNicht)))
+				 WHERE id=?',
+				array((1 === $stimme ? 1 : 0) - (1 === $alt ? 1 : 0), (-1 === $stimme ? 1 : 0) - (-1 === $alt ? 1 : 0), $aufgabeId)
+			);
+
+			if (null !== $memberId) {
+				$this->connection->executeStatement(
+					'UPDATE tl_schachaufgaben_versuch SET stimme=? WHERE memberId=? AND aufgabe=?',
+					array($stimme, $memberId, $aufgabeId)
+				);
+			} else {
+				$stimmen[$aufgabeId] = $stimme;
+				$session->set(self::SITZUNG_STIMMEN, \array_slice($stimmen, -self::MAX_GESEHEN, null, true));
+			}
+		}
+
+		$zeile = $this->connection->fetchAssociative('SELECT gefaellt, gefaelltNicht, beliebtheit FROM tl_schachaufgaben WHERE id=?', array($aufgabeId));
+
+		return array(
+			'stimme'        => $stimme,
+			'gefaellt'      => (int) ($zeile['gefaellt'] ?? 0),
+			'gefaelltNicht' => (int) ($zeile['gefaelltNicht'] ?? 0),
+			'beliebtheit'   => (int) ($zeile['beliebtheit'] ?? 0),
 		);
 	}
 

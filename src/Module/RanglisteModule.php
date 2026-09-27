@@ -59,7 +59,11 @@ class RanglisteModule extends Module
 	 *
 	 * Gesperrte oder abgelaufene Mitglieder (disable, stop) werden nicht
 	 * aufgeführt. Anzahl der Plätze und Mindestzahl der Versuche kommen aus
-	 * den Moduleinstellungen (numberOfItems, schachaufgabenMinVersuche).
+	 * den Moduleinstellungen (schachaufgabenPlaetze, schachaufgabenMinVersuche).
+	 *
+	 * Steht das angemeldete Mitglied nicht unter den gezeigten Plätzen, wird
+	 * seine Zeile mit dem tatsächlichen Platz unter der Tabelle angehängt; hat
+	 * es noch zu wenige Aufgaben gespielt, steht dort, wie viele noch fehlen.
 	 */
 	protected function compile(): void
 	{
@@ -67,17 +71,22 @@ class RanglisteModule extends Module
 
 		$GLOBALS['TL_CSS'][] = 'bundles/contaoschachaufgaben/training.css';
 
-		$anzahl = (int) $this->numberOfItems > 0 ? (int) $this->numberOfItems : 20;
+		$anzahl = (int) $this->schachaufgabenPlaetze > 0 ? (int) $this->schachaufgabenPlaetze : 20;
 		$minVersuche = max(0, (int) $this->schachaufgabenMinVersuche);
+		$db = System::getContainer()->get('database_connection');
 
-		$zeilen = System::getContainer()->get('database_connection')->fetchAllAssociative(
+		// Die Bedingung „darf in der Rangliste stehen" an einer Stelle
+		$gewertet = "s.versuche >= ? AND m.disable = '' AND (m.stop = '' OR m.stop > ?)";
+
+		$zeilen = $db->fetchAllAssociative(
 			sprintf(
-				"SELECT s.wertung, s.versuche, s.geloest, m.firstname, m.lastname, m.username
+				'SELECT s.wertung, s.versuche, s.geloest, m.firstname, m.lastname, m.username
 				 FROM tl_schachaufgaben_spieler s
 				 INNER JOIN tl_member m ON m.id = s.memberId
-				 WHERE s.versuche >= ? AND m.disable = '' AND (m.stop = '' OR m.stop > ?)
-				 ORDER BY s.wertung DESC
-				 LIMIT %d",
+				 WHERE %s
+				 ORDER BY s.wertung DESC, s.versuche DESC
+				 LIMIT %d',
+				$gewertet,
 				$anzahl
 			),
 			array($minVersuche, time())
@@ -85,22 +94,69 @@ class RanglisteModule extends Module
 
 		// Der TokenChecker ist in beiden Fassungen ein öffentlicher Dienst
 		$eigenerName = System::getContainer()->get('contao.security.token_checker')->getFrontendUsername();
-
 		$liste = array();
+		$gefunden = false;
 
-		foreach ($zeilen as $platz => $zeile) {
-			$liste[] = array(
-				'platz'    => $platz + 1,
-				'name'     => trim($zeile['firstname'].' '.mb_substr((string) $zeile['lastname'], 0, 1).'.'),
-				'wertung'  => (int) round((float) $zeile['wertung']),
-				'versuche' => (int) $zeile['versuche'],
-				'quote'    => (int) $zeile['versuche'] > 0 ? (int) round(100 * $zeile['geloest'] / $zeile['versuche']) : 0,
-				'eigene'   => null !== $eigenerName && $zeile['username'] === $eigenerName,
+		foreach ($zeilen as $index => $zeile) {
+			$eintrag = $this->eintrag($zeile, $index + 1, $eigenerName);
+			$gefunden = $gefunden || $eintrag['eigene'];
+			$liste[] = $eintrag;
+		}
+
+		$eigene = null;
+
+		if (null !== $eigenerName && !$gefunden) {
+			$zeile = $db->fetchAssociative(
+				'SELECT s.wertung, s.versuche, s.geloest, m.firstname, m.lastname, m.username
+				 FROM tl_schachaufgaben_spieler s
+				 INNER JOIN tl_member m ON m.id = s.memberId
+				 WHERE m.username = ?',
+				array($eigenerName)
 			);
+
+			if (false !== $zeile) {
+				$fehlen = max(0, $minVersuche - (int) $zeile['versuche']);
+				$platz = null;
+
+				if (0 === $fehlen) {
+					$platz = 1 + (int) $db->fetchOne(
+						sprintf('SELECT COUNT(*) FROM tl_schachaufgaben_spieler s INNER JOIN tl_member m ON m.id = s.memberId WHERE %s AND s.wertung > ?', $gewertet),
+						array($minVersuche, time(), $zeile['wertung'])
+					);
+				}
+
+				$eigene = array('fehlen' => $fehlen) + $this->eintrag($zeile, $platz, $eigenerName);
+			}
 		}
 
 		$this->Template->liste = $liste;
+		$this->Template->eigene = $eigene;
+		// Leerzeile nur, wenn der eigene Platz nicht unmittelbar an die Liste anschließt
+		$this->Template->luecke = null !== $eigene && (null === $eigene['platz'] || $eigene['platz'] > \count($liste) + 1);
 		$this->Template->minVersuche = $minVersuche;
 		$this->Template->texte = $GLOBALS['TL_LANG']['MSC']['schachaufgaben'] ?? array();
+	}
+
+	/**
+	 * Bereitet eine Zeile der Rangliste für das Template auf.
+	 *
+	 * @param array<string, mixed> $zeile       Zeile aus tl_schachaufgaben_spieler mit Mitgliedsdaten
+	 * @param int|null             $platz       Platz in der Rangliste, oder null solange noch nicht gewertet
+	 * @param string|null          $eigenerName Benutzername des angemeldeten Mitglieds, oder null
+	 *
+	 * @return array<string, mixed> platz, name („Vorname N."), wertung, versuche, quote und eigene
+	 */
+	private function eintrag(array $zeile, ?int $platz, ?string $eigenerName): array
+	{
+		$nachname = trim((string) $zeile['lastname']);
+
+		return array(
+			'platz'    => $platz,
+			'name'     => trim($zeile['firstname'].('' !== $nachname ? ' '.mb_substr($nachname, 0, 1).'.' : '')),
+			'wertung'  => (int) round((float) $zeile['wertung']),
+			'versuche' => (int) $zeile['versuche'],
+			'quote'    => (int) $zeile['versuche'] > 0 ? (int) round(100 * $zeile['geloest'] / $zeile['versuche']) : 0,
+			'eigene'   => null !== $eigenerName && $zeile['username'] === $eigenerName,
+		);
 	}
 }
