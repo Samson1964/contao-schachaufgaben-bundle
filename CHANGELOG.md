@@ -1,5 +1,19 @@
 # Schachaufgaben-Bundle Changelog
 
+## Version 1.2.0 (2026-09-27)
+
+* Add: Höchste erreichte Wertung mit Datum und Datum der ersten Benutzung je Mitglied
+  (`bestWertung`, `bestDatum`, `ersteNutzung` in `tl_schachaufgaben_spieler`). Als Bestwertung
+  zählt nur eine gesicherte Wertung (Abweichung höchstens 110).
+* Add: Frontend-Modul „Schachaufgaben-Bestenliste" (ewige Bestenliste) mit Datum und eigenem
+  Platz unter der Tabelle.
+* Add: Monatsranglisten: Ein Cronjob speichert zum Monatsersten die Rangliste in
+  `tl_schachaufgaben_ranglistenstand`; Konsolenbefehl `schachaufgaben:rangliste-speichern`;
+  Backend-Liste „Monatsranglisten".
+* Add: Migration trägt für bestehende Mitglieder erste Nutzung und Bestwertung nach.
+* Change: Beim Löschen eines Mitglieds verschwinden auch seine Einträge in den
+  Monatsranglisten.
+
 ## Version 1.1.1 (2026-09-27)
 
 * Fix: Nach einem Update lief im Browser weiter das alte Trainingsskript, weil Server Dateien

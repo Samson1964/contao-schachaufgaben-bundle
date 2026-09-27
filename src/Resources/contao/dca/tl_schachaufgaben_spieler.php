@@ -35,6 +35,8 @@ $GLOBALS['TL_DCA']['tl_schachaufgaben_spieler'] = array
 				'memberId' => 'unique',
 				// Für die Rangliste
 				'versuche,wertung' => 'index',
+				// Für die ewige Bestenliste
+				'bestWertung' => 'index',
 			)
 		)
 	),
@@ -70,6 +72,22 @@ $GLOBALS['TL_DCA']['tl_schachaufgaben_spieler'] = array
 			'sql' => "int(10) unsigned NOT NULL default '0'",
 		),
 		'geloest' => array
+		(
+			'sql' => "int(10) unsigned NOT NULL default '0'",
+		),
+		// Höchste gesicherte Wertung (Abweichung höchstens Training::GESICHERTE_ABWEICHUNG),
+		// 0 solange die Wertung noch nie gesichert war
+		'bestWertung' => array
+		(
+			'sql' => "double NOT NULL default '0'",
+		),
+		// Zeitpunkt, zu dem die höchste Wertung erreicht wurde
+		'bestDatum' => array
+		(
+			'sql' => "int(10) unsigned NOT NULL default '0'",
+		),
+		// Zeitpunkt, zu dem dem Mitglied die erste Aufgabe gestellt wurde
+		'ersteNutzung' => array
 		(
 			'sql' => "int(10) unsigned NOT NULL default '0'",
 		)

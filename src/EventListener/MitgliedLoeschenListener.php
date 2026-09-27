@@ -75,7 +75,7 @@ class MitgliedLoeschenListener
 	}
 
 	/**
-	 * Löscht die Zeilen des Mitglieds aus beiden Tabellen.
+	 * Löscht die Zeilen des Mitglieds aus Wertung, Versuchen und Monatsranglisten.
 	 *
 	 * @param int $memberId ID des Mitglieds aus tl_member
 	 */
@@ -83,5 +83,6 @@ class MitgliedLoeschenListener
 	{
 		$this->connection->executeStatement('DELETE FROM tl_schachaufgaben_versuch WHERE memberId=?', array($memberId));
 		$this->connection->executeStatement('DELETE FROM tl_schachaufgaben_spieler WHERE memberId=?', array($memberId));
+		$this->connection->executeStatement('DELETE FROM tl_schachaufgaben_ranglistenstand WHERE memberId=?', array($memberId));
 	}
 }

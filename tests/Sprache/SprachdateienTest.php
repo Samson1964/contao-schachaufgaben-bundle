@@ -72,6 +72,7 @@ class SprachdateienTest extends TestCase
 			'modules'           => array('modules'),
 			'tl_module'         => array('tl_module'),
 			'tl_schachaufgaben' => array('tl_schachaufgaben'),
+			'tl_schachaufgaben_ranglistenstand' => array('tl_schachaufgaben_ranglistenstand'),
 		);
 	}
 

@@ -39,6 +39,15 @@ class Training
 	private const SITZUNG_STIMMEN = 'schachaufgaben_stimmen';
 
 	/**
+	 * Ab dieser Abweichung (RD) gilt eine Wertung als gesichert. Erst dann
+	 * zählt sie als Bestwertung. Lichess nennt Wertungen mit größerer
+	 * Abweichung „vorläufig"; bei neuen Spielern (Start 350) ist das nach etwa
+	 * 12 bis 15 Aufgaben erreicht. Ohne diese Grenze wäre die Bestwertung oft
+	 * nur der Ausschlag nach der ersten gelösten Aufgabe (1500 → gut 1700).
+	 */
+	public const GESICHERTE_ABWEICHUNG = 110;
+
+	/**
 	 * Obergrenze der Merkliste eines Gastes, damit die Sitzung nicht
 	 * unbegrenzt wächst. Die ältesten Einträge fallen zuerst heraus.
 	 */
@@ -92,6 +101,13 @@ class Training
 		$id = (int) $aufgabe['id'];
 
 		if (null !== $memberId) {
+			// Beim allerersten Mal entsteht hier die Zeile des Mitglieds, mit dem
+			// Zeitpunkt der ersten Nutzung; die Wertung hat noch die Startwerte
+			$this->connection->executeStatement(
+				'INSERT IGNORE INTO tl_schachaufgaben_spieler (tstamp, memberId, ersteNutzung) VALUES (?, ?, ?)',
+				array(time(), $memberId, time())
+			);
+
 			$this->connection->executeStatement(
 				'INSERT IGNORE INTO tl_schachaufgaben_versuch (tstamp, memberId, aufgabe, wertungVorher) VALUES (?, ?, ?, ?)',
 				array(time(), $memberId, $id, $this->runden($spieler['wertung']->getWertung()))
@@ -338,6 +354,11 @@ class Training
 	/**
 	 * Speichert Wertung und Zähler des Spielers.
 	 *
+	 * Bei Mitgliedern wird dabei die Bestwertung mitgeführt: Ist die neue
+	 * Wertung gesichert und höher als die bisher beste, wird sie mit Datum
+	 * übernommen. Die erste Nutzung setzt schon aufgabeStellen(); hier wird sie
+	 * nur nachgetragen, falls sie fehlt.
+	 *
 	 * @param int|null                                              $memberId ID des Mitglieds, oder null
 	 * @param SessionInterface                                      $session  Die Sitzung
 	 * @param array{wertung: Wertung, versuche: int, geloest: int} $spieler  Der neue Stand
@@ -358,11 +379,21 @@ class Training
 			return;
 		}
 
+		// Als Bestwertung zählt nur eine gesicherte Wertung (siehe GESICHERTE_ABWEICHUNG)
+		$jetzt = time();
+		$kandidat = $werte['wertungAbweichung'] <= self::GESICHERTE_ABWEICHUNG ? $werte['wertung'] : 0.0;
+
+		// bestDatum steht vor bestWertung: MySQL und MariaDB werten die Zuweisungen
+		// von links nach rechts aus, der Vergleich muss die alte Bestwertung sehen
 		$this->connection->executeStatement(
-			'INSERT INTO tl_schachaufgaben_spieler (tstamp, memberId, wertung, wertungAbweichung, wertungVolatilitaet, versuche, geloest) VALUES (?, ?, ?, ?, ?, ?, ?)
+			'INSERT INTO tl_schachaufgaben_spieler (tstamp, memberId, wertung, wertungAbweichung, wertungVolatilitaet, versuche, geloest, bestWertung, bestDatum, ersteNutzung)
+			 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 			 ON DUPLICATE KEY UPDATE tstamp=VALUES(tstamp), wertung=VALUES(wertung), wertungAbweichung=VALUES(wertungAbweichung),
-			 wertungVolatilitaet=VALUES(wertungVolatilitaet), versuche=VALUES(versuche), geloest=VALUES(geloest)',
-			array(time(), $memberId, $werte['wertung'], $werte['wertungAbweichung'], $werte['wertungVolatilitaet'], $werte['versuche'], $werte['geloest'])
+			 wertungVolatilitaet=VALUES(wertungVolatilitaet), versuche=VALUES(versuche), geloest=VALUES(geloest),
+			 bestDatum=IF(VALUES(bestWertung) > bestWertung, VALUES(bestDatum), bestDatum),
+			 bestWertung=GREATEST(bestWertung, VALUES(bestWertung)),
+			 ersteNutzung=IF(ersteNutzung = 0, VALUES(ersteNutzung), ersteNutzung)',
+			array($jetzt, $memberId, $werte['wertung'], $werte['wertungAbweichung'], $werte['wertungVolatilitaet'], $werte['versuche'], $werte['geloest'], $kandidat, $kandidat > 0 ? $jetzt : 0, $jetzt)
 		);
 	}
 

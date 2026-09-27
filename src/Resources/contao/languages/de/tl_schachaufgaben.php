@@ -42,6 +42,7 @@ $GLOBALS['TL_LANG']['tl_schachaufgaben']['quelle_optionen'] = array
 );
 
 // Operationen
+$GLOBALS['TL_LANG']['tl_schachaufgaben']['ranglisten'] = array('Monatsranglisten', 'Die zum Monatsersten gespeicherten Ranglisten ansehen');
 $GLOBALS['TL_LANG']['tl_schachaufgaben']['import'] = array('Lichess-Import', 'Aufgaben aus der Lichess-Aufgabensammlung importieren');
 $GLOBALS['TL_LANG']['tl_schachaufgaben']['new'] = array('Neue Aufgabe', 'Eine neue Aufgabe anlegen');
 $GLOBALS['TL_LANG']['tl_schachaufgaben']['edit'] = array('Aufgabe bearbeiten', 'Aufgabe ID %s bearbeiten');

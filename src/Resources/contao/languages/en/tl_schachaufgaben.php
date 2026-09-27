@@ -42,6 +42,7 @@ $GLOBALS['TL_LANG']['tl_schachaufgaben']['quelle_optionen'] = array
 );
 
 // Operationen
+$GLOBALS['TL_LANG']['tl_schachaufgaben']['ranglisten'] = array('Monthly rankings', 'View the rankings saved on the first of each month');
 $GLOBALS['TL_LANG']['tl_schachaufgaben']['import'] = array('Lichess import', 'Import puzzles from the Lichess puzzle database');
 $GLOBALS['TL_LANG']['tl_schachaufgaben']['new'] = array('New puzzle', 'Create a new puzzle');
 $GLOBALS['TL_LANG']['tl_schachaufgaben']['edit'] = array('Edit puzzle', 'Edit puzzle ID %s');

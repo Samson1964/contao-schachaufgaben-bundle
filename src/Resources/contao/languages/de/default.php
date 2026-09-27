@@ -44,6 +44,11 @@ $GLOBALS['TL_LANG']['MSC']['schachaufgaben'] = array
 	'nochNichtGewertet' => 'noch %d Aufgaben bis zur Wertung',
 	'nochNichtGewertetEins' => 'noch 1 Aufgabe bis zur Wertung',
 	'mindestensHinweis' => 'Aufgenommen ab %d gespielten Aufgaben.',
+	'bestWertung'      => 'Beste Wertung',
+	'erreicht'         => 'erreicht am',
+	'bestenlisteLeer'  => 'Noch hat niemand eine gesicherte Wertung erreicht.',
+	'nochUngesichert'  => 'noch keine gesicherte Wertung',
+	'bestenlisteHinweis' => 'Gezählt wird die höchste gesicherte Wertung. Gesichert ist eine Wertung, sobald sie genau genug bestimmt ist, meist nach 12 bis 15 Aufgaben.',
 );
 
 // Deutsche Namen der Lichess-Motive. Unbekannte Motive zeigt das Training unverändert.

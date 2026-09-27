@@ -62,6 +62,13 @@ $GLOBALS['TL_DCA']['tl_schachaufgaben'] = array
 		),
 		'global_operations' => array
 		(
+			'ranglisten' => array
+			(
+				'label' => &$GLOBALS['TL_LANG']['tl_schachaufgaben']['ranglisten'],
+				'href'  => 'table=tl_schachaufgaben_ranglistenstand',
+				'class' => 'header_css_import',
+				'icon'  => 'sync.svg',
+			),
 			'import' => array
 			(
 				'label'      => &$GLOBALS['TL_LANG']['tl_schachaufgaben']['import'],

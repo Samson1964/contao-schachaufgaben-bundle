@@ -21,6 +21,10 @@ Unter **Themes → Frontend-Module**, Gruppe „Schachaufgaben":
   tatsächlichen Platz unter der Tabelle, vor Erreichen der Mindestzahl mit dem Hinweis, wie
   viele Aufgaben bis zur Wertung fehlen.
 
+* **Schachaufgaben-Bestenliste** – die ewige Bestenliste: die höchste je erreichte Wertung
+  jedes Mitglieds mit dem Datum, an dem sie erreicht wurde. Einstellbar ist die Anzahl der
+  Plätze; auch hier erscheint der eigene Platz unter der Tabelle.
+
 Für angemeldete Mitglieder gehört ein Anmeldemodul von Contao auf die Seite; ohne
 Anmeldung wird als Gast gespielt.
 
@@ -48,6 +52,27 @@ Anmeldung wird als Gast gespielt.
 * Die Wertung einer Aufgabe ändert sich nur durch Mitglieder, damit Gäste sie nicht
   verfälschen können.
 * Gäste behalten ihre Wertung nur für die Sitzung und erscheinen nicht in der Rangliste.
+
+### Bestwertung, erste Nutzung und Monatsranglisten
+
+* Für jedes Mitglied werden die **höchste erreichte Wertung** mit Datum und das Datum der
+  **ersten Benutzung** gespeichert (`tl_schachaufgaben_spieler`: `bestWertung`, `bestDatum`,
+  `ersteNutzung`).
+* Als Bestwertung zählt nur eine **gesicherte** Wertung, also eine mit einer Abweichung von
+  höchstens 110 (`Training::GESICHERTE_ABWEICHUNG`), wie bei Lichess die Grenze zu
+  „vorläufig". Sonst wäre die Bestwertung oft nur der Ausschlag nach der ersten gelösten
+  Aufgabe. Gesichert ist eine Wertung meist nach 12 bis 15 Aufgaben.
+* Ein **Cronjob** speichert zum Monatsersten die Rangliste in
+  `tl_schachaufgaben_ranglistenstand`: je Mitglied mit mindestens einer Aufgabe Platz, Name
+  („Vorname N."), Wertung, Abweichung, Aufgaben, gelöste Aufgaben und Bestwertung. Er läuft
+  stündlich und legt den Stand beim ersten Lauf nach Monatsbeginn an; alle weiteren Läufe
+  finden ihn vor. Voraussetzung ist, dass der Contao-Cron läuft (Seitenaufrufe oder
+  `contao:cron`). Von Hand: `php vendor/bin/contao-console schachaufgaben:rangliste-speichern`.
+* Im Backend unter **Inhalte → Schachaufgaben → Monatsranglisten** lassen sich die Stände
+  ansehen.
+* Beim Update von 1.1 trägt eine Migration die erste Nutzung (ältester Versuch) und, bei
+  gesicherter Wertung, die aktuelle Wertung als Bestwertung nach. Frühere Höchststände waren
+  nicht gespeichert und lassen sich nicht zurückgewinnen.
 
 ### Eigene Statistik und Bewertung
 
@@ -90,7 +115,7 @@ Formularen); das Ergebnis nur für eine gestellte, noch nicht gewertete Aufgabe,
 erst nach dem Ergebnis.
 
 Beim Löschen eines Mitglieds (Backend oder Frontend-Modul „Konto schließen" mit Löschen)
-werden seine Wertung und Versuche mitgelöscht. Im Backend werden FEN und Züge beim Speichern
+werden seine Wertung, Versuche und Einträge in den Monatsranglisten mitgelöscht. Im Backend werden FEN und Züge beim Speichern
 nach denselben Regeln wie beim Import geprüft.
 
 ## Aufbau einer Aufgabe

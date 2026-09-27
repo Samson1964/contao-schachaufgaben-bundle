@@ -24,6 +24,9 @@ $GLOBALS['TL_DCA']['tl_module']['palettes']['schachaufgaben_training']
 $GLOBALS['TL_DCA']['tl_module']['palettes']['schachaufgaben_rangliste']
 	= '{title_legend},name,headline,type;{schachaufgaben_legend},schachaufgabenPlaetze,schachaufgabenMinVersuche;{template_legend:hide},customTpl;{protected_legend:hide},protected;{expert_legend:hide},cssID';
 
+$GLOBALS['TL_DCA']['tl_module']['palettes']['schachaufgaben_bestenliste']
+	= '{title_legend},name,headline,type;{schachaufgaben_legend},schachaufgabenPlaetze;{template_legend:hide},customTpl;{protected_legend:hide},protected;{expert_legend:hide},cssID';
+
 $GLOBALS['TL_DCA']['tl_module']['fields']['schachaufgabenPlaetze'] = array
 (
 	'exclude'   => true,

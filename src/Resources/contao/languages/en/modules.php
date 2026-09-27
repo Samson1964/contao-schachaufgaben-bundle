@@ -15,4 +15,5 @@ $GLOBALS['TL_LANG']['MOD']['schachaufgaben'] = array('Chess puzzles', 'Manage th
 // Frontend-Module
 $GLOBALS['TL_LANG']['FMD']['schachaufgaben'] = 'Chess puzzles';
 $GLOBALS['TL_LANG']['FMD']['schachaufgaben_training'] = array('Chess puzzle training', 'Solve puzzles like on lichess.org/training, with a personal rating for members and guests.');
+$GLOBALS['TL_LANG']['FMD']['schachaufgaben_bestenliste'] = array('Chess puzzle all-time best', 'The all-time best list: the highest rating each member ever reached, with the date.');
 $GLOBALS['TL_LANG']['FMD']['schachaufgaben_rangliste'] = array('Chess puzzle ranking', 'The members with the highest puzzle rating.');

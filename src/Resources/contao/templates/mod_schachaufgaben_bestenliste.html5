@@ -1,0 +1,52 @@
+<?php $this->extend('block_unsearchable'); ?>
+
+<?php $this->block('content'); ?>
+
+  <?php if (empty($this->liste) && !$this->eigene): ?>
+    <p class="empty"><?= $this->texte['bestenlisteLeer'] ?></p>
+  <?php else: ?>
+    <table class="schachaufgaben-rangliste schachaufgaben-bestenliste">
+      <thead>
+        <tr>
+          <th scope="col" class="platz"><?= $this->texte['platz'] ?></th>
+          <th scope="col" class="name"><?= $this->texte['name'] ?></th>
+          <th scope="col" class="wertung"><?= $this->texte['bestWertung'] ?></th>
+          <th scope="col" class="datum"><?= $this->texte['erreicht'] ?></th>
+          <th scope="col" class="versuche"><?= $this->texte['gespielt'] ?></th>
+        </tr>
+      </thead>
+      <tbody>
+        <?php foreach ($this->liste as $zeile): ?>
+          <tr<?php if ($zeile['eigene']): ?> class="eigene" aria-current="true"<?php endif; ?>>
+            <td class="platz"><?= $zeile['platz'] ?></td>
+            <td class="name"><?= Contao\StringUtil::specialchars($zeile['name']) ?></td>
+            <td class="wertung"><?= $zeile['bestWertung'] ?></td>
+            <td class="datum"><?= $zeile['bestDatum'] ?></td>
+            <td class="versuche"><?= $zeile['versuche'] ?></td>
+          </tr>
+        <?php endforeach; ?>
+      </tbody>
+      <?php if ($eigene = $this->eigene): ?>
+        <tfoot>
+          <?php if ($this->luecke): ?>
+            <tr class="luecke" aria-hidden="true"><td colspan="5">⋮</td></tr>
+          <?php endif; ?>
+          <tr class="eigene" aria-current="true">
+            <td class="platz"><?= $eigene['platz'] ?? '–' ?></td>
+            <td class="name">
+              <?= Contao\StringUtil::specialchars($eigene['name']) ?>
+              <?php if ($eigene['fehlen'] > 0): ?>
+                <span class="fehlen"><?= $this->texte['nochUngesichert'] ?></span>
+              <?php endif; ?>
+            </td>
+            <td class="wertung"><?= $eigene['fehlen'] > 0 ? '–' : $eigene['bestWertung'] ?></td>
+            <td class="datum"><?= $eigene['bestDatum'] ?></td>
+            <td class="versuche"><?= $eigene['versuche'] ?></td>
+          </tr>
+        </tfoot>
+      <?php endif; ?>
+    </table>
+    <p class="schachaufgaben-rangliste-hinweis"><?= $this->texte['bestenlisteHinweis'] ?></p>
+  <?php endif; ?>
+
+<?php $this->endblock(); ?>

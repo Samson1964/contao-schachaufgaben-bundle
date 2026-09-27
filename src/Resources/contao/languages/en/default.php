@@ -44,6 +44,11 @@ $GLOBALS['TL_LANG']['MSC']['schachaufgaben'] = array
 	'nochNichtGewertet' => '%d more puzzles until you are ranked',
 	'nochNichtGewertetEins' => '1 more puzzle until you are ranked',
 	'mindestensHinweis' => 'Listed from %d puzzles played.',
+	'bestWertung'      => 'Best rating',
+	'erreicht'         => 'reached on',
+	'bestenlisteLeer'  => 'Nobody has reached a confirmed rating yet.',
+	'nochUngesichert'  => 'no confirmed rating yet',
+	'bestenlisteHinweis' => 'The highest confirmed rating counts. A rating is confirmed once it is determined precisely enough, usually after 12 to 15 puzzles.',
 );
 
 // Lesbare Namen der Lichess-Motive (englisch)
