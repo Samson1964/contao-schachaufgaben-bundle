@@ -1,5 +1,16 @@
 # Schachaufgaben-Bundle Changelog
 
+## Version 1.1.1 (2026-09-27)
+
+* Fix: Nach einem Update lief im Browser weiter das alte Trainingsskript, weil Server Dateien
+  unter `/bundles` oft ein Jahr lang zwischenspeichern lassen (bei 1.1.0 fehlten dadurch die
+  Bewertungsknöpfe). `training.js` wird jetzt mit einer Versionsangabe aus dem
+  Änderungsdatum eingebunden und lädt `eroeffnung.js` mit derselben Angabe nach.
+* Fix: Deutlicherer Kontrast beim Überfahren der Knöpfe („Lösung zeigen", „Gefällt mir" …):
+  dunkelblau mit weißer Schrift statt hellblau.
+* Fix: Die Bewertungsknöpfe waren vor dem Ende einer Aufgabe nicht zuverlässig verborgen,
+  weil `display: flex` das `hidden`-Attribut aufhob.
+
 ## Version 1.1.0 (2026-09-27)
 
 * Change: PHP 8.1 ist Voraussetzung (bisher 7.4). Der Konsolenbefehl meldet sich über

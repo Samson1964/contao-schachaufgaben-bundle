@@ -76,7 +76,11 @@ class TrainingModule extends Module
 		$GLOBALS['TL_CSS'][] = 'bundles/contaoschachaufgaben/vendor/cm-chessboard/assets/extensions/promotion-dialog/promotion-dialog.css';
 		$GLOBALS['TL_CSS'][] = 'bundles/contaoschachaufgaben/training.css';
 
-		$this->Template->skript = $basis.'training.js';
+		// Versionsangabe aus dem Änderungsdatum: Viele Server liefern Dateien
+		// unter /bundles mit einem Jahr Cache-Dauer aus, ohne Angabe liefe nach
+		// einem Update weiter das alte Skript (so bei 1.1.0 geschehen).
+		// training.js reicht die Angabe an eroeffnung.js weiter.
+		$this->Template->skript = $basis.'training.js?v='.$this->skriptVersion();
 		$this->Template->texte = $GLOBALS['TL_LANG']['MSC']['schachaufgaben'] ?? array();
 		$this->Template->konfiguration = array(
 			'aufgabeUrl'   => $router->generate('schachaufgaben_aufgabe'),
@@ -87,5 +91,25 @@ class TrainingModule extends Module
 			'motive'       => $GLOBALS['TL_LANG']['MSC']['schachaufgaben_motive'] ?? array(),
 			'eroeffnungen' => $GLOBALS['TL_LANG']['MSC']['schachaufgaben_eroeffnungen'] ?? array(),
 		);
+	}
+
+	/**
+	 * Bildet eine kurze Versionsangabe aus dem Änderungsdatum der eigenen Skripte.
+	 *
+	 * Gelesen wird aus Resources/public des Bundles, nicht aus dem öffentlichen
+	 * Verzeichnis, weil das je nach Installation eine Kopie oder ein Verweis ist.
+	 *
+	 * @return string Acht Hexadezimalzeichen, die sich mit jeder Änderung der Skripte ändern
+	 */
+	private function skriptVersion(): string
+	{
+		$verzeichnis = __DIR__.'/../Resources/public/';
+		$stand = '';
+
+		foreach (array('training.js', 'eroeffnung.js') as $datei) {
+			$stand .= $datei.'@'.(@filemtime($verzeichnis.$datei) ?: 0).';';
+		}
+
+		return substr(md5($stand), 0, 8);
 	}
 }

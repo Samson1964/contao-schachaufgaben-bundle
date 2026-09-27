@@ -19,7 +19,12 @@ import {Chessboard, COLOR, INPUT_EVENT_TYPE, BORDER_TYPE} from "./vendor/cm-ches
 import {Markers, MARKER_TYPE} from "./vendor/cm-chessboard/src/extensions/markers/Markers.js"
 import {PromotionDialog, PROMOTION_DIALOG_RESULT_TYPE} from "./vendor/cm-chessboard/src/extensions/promotion-dialog/PromotionDialog.js"
 import {Chess} from "./vendor/chess.js/chess.js"
-import {eroeffnungUebersetzen} from "./eroeffnung.js"
+
+// Eigene Module mit derselben Versionsangabe laden, mit der training.js
+// eingebunden wurde („?v=…"), damit nach einem Update kein Browser eine alte
+// Fassung aus seinem Zwischenspeicher nimmt. Ein statischer Import kann die
+// Angabe nicht übernehmen, deshalb der dynamische Import.
+const {eroeffnungUebersetzen} = await import("./eroeffnung.js" + new URL(import.meta.url).search)
 
 /** Pause zwischen den Zügen, damit der Spieler sie verfolgen kann (ms). */
 const PAUSE = 500
