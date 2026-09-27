@@ -1,0 +1,34 @@
+# Quelle für die Metadaten im Contao Manager (contao/package-metadata).
+# Änderungen hier werden von Claude in den Fork übertragen.
+
+de:
+    title: Schachaufgaben
+    description: >
+        Training mit Aufgaben aus echten Partien wie bei Lichess. Mitglieder und Gäste
+        lösen Aufgaben auf dem Brett, eine eigene Wertung passt die Schwierigkeit laufend
+        an, und keine Aufgabe wird zweimal gestellt. Dazu eine Rangliste der Mitglieder
+        und der Import der freien Aufgabensammlung von Lichess im Backend oder auf der Konsole.
+    keywords:
+        - Schach
+        - Schachaufgaben
+        - Taktik
+        - Training
+        - Lichess
+        - Rangliste
+        - Glicko
+
+en:
+    title: Chess puzzles
+    description: >
+        Chess puzzle training like on Lichess. Members and guests solve puzzles taken from
+        real games on an interactive board, a personal rating keeps adjusting the difficulty,
+        and no puzzle is ever shown twice. Includes a leaderboard for members and an importer
+        for the free Lichess puzzle database, both in the back end and on the command line.
+    keywords:
+        - chess
+        - puzzles
+        - tactics
+        - training
+        - Lichess
+        - leaderboard
+        - Glicko

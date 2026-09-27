@@ -10,3 +10,6 @@
 
 # PhpUnit-Zwischenstand
 /.phpunit.result.cache
+
+# Arbeitsnotizen für Claude, nicht veröffentlichen
+/CLAUDE.md

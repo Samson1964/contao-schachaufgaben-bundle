@@ -1,6 +1,6 @@
 # Schachaufgaben-Bundle Changelog
 
-## Version 0.1.0 (2026-09-26)
+## Version 1.0.0 (2026-09-27)
 
 * Add: Grundgerüst des Bundles für Contao 4.13 und 5.7: `composer.json`, Contao-Manager-Plugin,
   Bundle-Klasse, DI-Extension und `services.yaml` mit automatischer Dienstregistrierung.
