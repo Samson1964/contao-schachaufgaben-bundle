@@ -1,0 +1,179 @@
+/*
+ * Schachaufgaben — Stile der Backend-Statistik.
+ *
+ * Werte und Aufbau wie in der Statistik des counter-Bundles (dort fhc-stat-*),
+ * damit die Statistiken der Erweiterungen im Backend einheitlich aussehen.
+ * Eingebunden von Backend\StatistikSeite.
+ */
+
+.sa-stat-steuerung {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px 26px;
+	margin: 0 0 14px;
+	padding: 12px 14px;
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	background: #f7f7f7;
+}
+
+.sa-stat-gruppe {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 6px;
+}
+
+.sa-stat-titel {
+	margin-right: 4px;
+	font-weight: bold;
+	color: #5c5c5c;
+}
+
+.sa-stat-knopf {
+	display: inline-block;
+	padding: 4px 10px;
+	border: 1px solid #c8c8c8;
+	border-radius: 3px;
+	background: #fff;
+	color: #1f1f1f;
+	text-decoration: none;
+}
+
+a.sa-stat-knopf:hover {
+	border-color: #1F618D;
+	color: #1F618D;
+}
+
+.sa-stat-knopf.aktiv {
+	border-color: #1F618D;
+	background: #1F618D;
+	color: #fff;
+	font-weight: bold;
+}
+
+.sa-stat-knopf.gesperrt {
+	opacity: 0.45;
+	cursor: default;
+}
+
+.sa-stat-navigation {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 10px;
+	margin: 0 0 14px;
+}
+
+.sa-stat-zeitraum {
+	font-size: 1.1em;
+	color: #1f1f1f;
+}
+
+.sa-stat-hinweis {
+	margin-left: auto;
+	color: #8a8a8a;
+}
+
+/* Mehrere Kennzahlen nebeneinander, jede im Stil der Counter-Kennzahl */
+.sa-stat-kennzahlen {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+	margin: 0 0 14px;
+}
+
+.sa-stat-kennzahl {
+	display: flex;
+	flex: 1 1 150px;
+	flex-direction: column;
+	gap: 2px;
+	padding: 10px 14px;
+	border: 1px solid #cfe0ec;
+	border-radius: 3px;
+	background: #eaf2f8;
+}
+
+.sa-stat-kennzahl strong {
+	font-size: 1.4em;
+	color: #1F618D;
+}
+
+.sa-stat-kennzahl small {
+	color: #5c5c5c;
+}
+
+.sa-stat-diagramm {
+	margin: 0 0 22px;
+	padding: 12px 14px 6px;
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	background: #fff;
+}
+
+.sa-stat-legende {
+	/* Eigene Zeile erzwingen, sonst rutscht das Diagramm neben die Legende */
+	clear: both;
+	width: 100%;
+	margin-bottom: 8px;
+	color: #5c5c5c;
+}
+
+.sa-stat-farbe {
+	display: inline-block;
+	width: 12px;
+	height: 12px;
+	margin: 0 6px 0 14px;
+	vertical-align: -1px;
+}
+
+.sa-stat-farbe:first-child {
+	margin-left: 0;
+}
+
+.sa-stat-farbe--dunkel {
+	background: #1F618D;
+}
+
+.sa-stat-farbe--hell {
+	background: #7FB3D5;
+}
+
+.sa-stat-zwischentitel {
+	margin: 18px 0 8px;
+	font-size: 1.1em;
+}
+
+.sa-stat-scroll {
+	overflow-x: auto;
+	clear: both;
+	width: 100%;
+}
+
+.sa-stat-tabelle {
+	width: 100%;
+	/* Ohne Mindestbreite quetscht sich die Tabelle im schmalen Backend-Fenster */
+	min-width: 720px;
+	border-collapse: collapse;
+}
+
+.sa-stat-tabelle th,
+.sa-stat-tabelle td {
+	padding: 6px 10px;
+	border-bottom: 1px solid #e2e2e2;
+	text-align: left;
+}
+
+.sa-stat-tabelle th {
+	background: #f2f2f2;
+	font-weight: bold;
+}
+
+.sa-stat-tabelle .rechts {
+	text-align: right;
+	white-space: nowrap;
+}
+
+.sa-stat-tabelle tr.odd td {
+	background: #fafafa;
+}

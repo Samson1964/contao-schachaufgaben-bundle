@@ -112,3 +112,43 @@ $GLOBALS['TL_LANG']['tl_schachaufgaben']['pgn_seite'] = array
 	'fehlerbeispiele'  => 'Nicht übernommen (Auszug):',
 	'serverfehler'     => 'Der Server hat mit einem Fehler geantwortet',
 );
+
+// Statistik (do=schachaufgaben&key=statistik)
+$GLOBALS['TL_LANG']['tl_schachaufgaben']['statistik'] = array('Statistik', 'Zugriffe und gespielte Aufgaben auswerten');
+$GLOBALS['TL_LANG']['tl_schachaufgaben']['statistik_seite'] = array
+(
+	'zurueckModul'    => 'Zurück',
+	'ueberschrift'    => 'Statistik der Zugriffe und gespielten Aufgaben',
+	'zeitraumTitel'   => 'Zeitraum',
+	'ebene_tag'       => 'Tag',
+	'ebene_monat'     => 'Monat',
+	'ebene_jahr'      => 'Jahr',
+	'zurueck'         => 'zurück',
+	'vor'             => 'vor',
+	'heute'           => 'bis heute',
+	'bestand'         => '%s veröffentlichte Aufgaben · %s Mitglieder mit Wertung',
+	'keineDaten'      => 'Für diesen Zeitraum ist nichts gezählt. Mit „zurück“ lässt sich ein früherer Zeitraum ansteuern; über die Knöpfe oben wird aus dem Tag ein ganzer Monat oder ein ganzes Jahr.',
+	'art_aufruf'      => 'Aufgaben aufgerufen',
+	'art_begonnen'    => 'Aufgaben gespielt',
+	'art_geloest'     => 'gelöst',
+	'art_nichtgeloest' => 'nicht gelöst',
+	'davon'           => '%s Mitglieder · %s Gäste',
+	'quote'           => 'Lösungsquote',
+	'neueSpieler'     => '%s neue Mitglieder im Zeitraum',
+	'diagrammAufrufe' => 'Aufrufe und gespielte Aufgaben',
+	'diagrammGeloest' => 'Gespielte und gelöste Aufgaben',
+	'legendeAufrufe'  => array('gespielt', 'aufgerufen'),
+	'legendeGeloest'  => array('gelöst', 'gespielt'),
+	'meistgespielt'   => 'Meistgespielte Aufgaben (Mitglieder)',
+	'aktivste'        => 'Aktivste Mitglieder',
+	'keineMitglieder' => 'In diesem Zeitraum haben keine Mitglieder gespielt.',
+	'platz'           => 'Platz',
+	'gespielt'        => 'Gespielt',
+	'geloestSpalte'   => 'Gelöst',
+	'aufgabe'         => 'Aufgabe',
+	'wertung'         => 'Wertung',
+	'beliebtheit'     => 'Beliebtheit',
+	'name'            => 'Name',
+	'aktuelleWertung' => 'Aktuelle Wertung',
+	'hinweis'         => 'Aufgerufen zählt jede gestellte Aufgabe, gespielt jede Aufgabe mit mindestens einem Zug oder „Lösung zeigen“. Die Zählung beginnt mit Fassung 1.4.0. Die Ranglisten beruhen auf den Versuchen der Mitglieder; Gäste werden dort nicht erfasst.',
+);

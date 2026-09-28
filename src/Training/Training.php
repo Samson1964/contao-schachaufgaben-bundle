@@ -66,15 +66,19 @@ class Training
 
 	private Glicko2 $glicko;
 
+	private Statistik $statistik;
+
 	/**
 	 * Übernimmt die benötigten Dienste.
 	 *
 	 * @param Connection   $connection Die Datenbankverbindung von Contao
 	 * @param AufgabenWahl $wahl       Sucht die nächste passende Aufgabe
 	 * @param Glicko2      $glicko     Berechnet die Wertungen
+	 * @param Statistik    $statistik  Zählt Aufrufe und gespielte Aufgaben
 	 */
-	public function __construct(Connection $connection, AufgabenWahl $wahl, Glicko2 $glicko)
+	public function __construct(Connection $connection, AufgabenWahl $wahl, Glicko2 $glicko, Statistik $statistik)
 	{
+		$this->statistik = $statistik;
 		$this->connection = $connection;
 		$this->wahl = $wahl;
 		$this->glicko = $glicko;
@@ -110,6 +114,7 @@ class Training
 		$offen = $this->offen($session);
 		$offen[] = $id;
 		$session->set(self::SITZUNG_OFFEN, \array_slice(array_values(array_unique($offen)), -self::MAX_OFFEN));
+		$this->statistik->zaehlen(Statistik::AUFRUF, null === $memberId);
 
 		return array(
 			'id'      => $id,
@@ -160,10 +165,13 @@ class Training
 				array(time(), $memberId, time())
 			);
 
-			$this->connection->executeStatement(
+			// Zählen nur, wenn der Eintrag wirklich neu ist (nicht bei zwei gleichzeitigen Meldungen)
+			if (1 === (int) $this->connection->executeStatement(
 				'INSERT IGNORE INTO tl_schachaufgaben_versuch (tstamp, memberId, aufgabe, wertungVorher) VALUES (?, ?, ?, ?)',
 				array(time(), $memberId, $aufgabeId, $this->runden($spieler['wertung']->getWertung()))
-			);
+			)) {
+				$this->statistik->zaehlen(Statistik::BEGONNEN, false);
+			}
 
 			return true;
 		}
@@ -180,6 +188,7 @@ class Training
 
 		$gesehen[] = $aufgabeId;
 		$session->set(self::SITZUNG_GESEHEN, \array_slice($gesehen, -self::MAX_GESEHEN));
+		$this->statistik->zaehlen(Statistik::BEGONNEN, true);
 
 		return true;
 	}
@@ -236,6 +245,7 @@ class Training
 		}
 
 		$this->spielerSpeichern($memberId, $session, $spieler);
+		$this->statistik->zaehlen($geloest ? Statistik::GELOEST : Statistik::NICHT_GELOEST, null === $memberId);
 
 		$alt = $this->runden($vorher->getWertung());
 		$neu = $this->runden($spieler['wertung']->getWertung());

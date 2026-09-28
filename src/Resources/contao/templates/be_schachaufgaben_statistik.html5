@@ -1,0 +1,136 @@
+<?php
+/**
+ * Backend-Template der Statistik (do=schachaufgaben&key=statistik).
+ * Aufbau nach be_counter_statistik aus dem counter-Bundle.
+ */
+$t = $this->texte;
+$zahl = static fn ($wert): string => number_format((int) $wert, 0, ',', '.');
+$s = $this->summen;
+?>
+<div id="tl_buttons">
+	<a href="<?= $this->urlModul ?>" class="header_back" title="" accesskey="b" onclick="Backend.getScrollOffset()"><?= $t['zurueckModul'] ?></a>
+</div>
+
+<h2 class="sub_headline"><?= $t['ueberschrift'] ?></h2>
+
+<div class="tl_listing_container sa-stat">
+
+	<div class="sa-stat-steuerung">
+		<div class="sa-stat-gruppe">
+			<span class="sa-stat-titel"><?= $t['zeitraumTitel'] ?></span>
+			<?php foreach ($this->ebenenLinks as $l): ?>
+				<a href="<?= $l['url'] ?>" class="sa-stat-knopf<?= $l['aktiv'] ? ' aktiv' : '' ?>"><?= $l['text'] ?></a>
+			<?php endforeach; ?>
+		</div>
+	</div>
+
+	<div class="sa-stat-navigation">
+		<a href="<?= $this->urlZurueck ?>" class="sa-stat-knopf">&#9664;&nbsp;<?= $t['zurueck'] ?></a>
+		<span class="sa-stat-zeitraum"><strong><?= $this->zeitraum ?></strong></span>
+		<?php if ($this->kannVor): ?>
+			<a href="<?= $this->urlVor ?>" class="sa-stat-knopf"><?= $t['vor'] ?>&nbsp;&#9654;</a>
+			<a href="<?= $this->urlHeute ?>" class="sa-stat-knopf"><?= $t['heute'] ?></a>
+		<?php else: ?>
+			<span class="sa-stat-knopf gesperrt" aria-disabled="true"><?= $t['vor'] ?>&nbsp;&#9654;</span>
+		<?php endif; ?>
+		<span class="sa-stat-hinweis"><?= sprintf($t['bestand'], $zahl($this->bestand['aufgaben']), $zahl($this->bestand['spieler'])) ?></span>
+	</div>
+
+	<?php if (!$this->hatDaten): ?>
+
+		<p class="tl_info"><?= $t['keineDaten'] ?></p>
+
+	<?php else: ?>
+
+		<div class="sa-stat-kennzahlen">
+			<?php foreach (array('aufruf', 'begonnen', 'geloest', 'nichtgeloest') as $art): ?>
+				<div class="sa-stat-kennzahl">
+					<strong><?= $zahl($s[$art]['gesamt']) ?></strong>
+					<span><?= $t['art_'.$art] ?></span>
+					<small><?= sprintf($t['davon'], $zahl($s[$art]['mitglieder']), $zahl($s[$art]['gaeste'])) ?></small>
+				</div>
+			<?php endforeach; ?>
+			<div class="sa-stat-kennzahl">
+				<strong><?= null === $this->quote ? '–' : $this->quote.' %' ?></strong>
+				<span><?= $t['quote'] ?></span>
+				<small><?= sprintf($t['neueSpieler'], $zahl($this->bestand['neueSpieler'])) ?></small>
+			</div>
+		</div>
+
+		<?php foreach (array('diagrammAufrufe' => 'legendeAufrufe', 'diagrammGeloest' => 'legendeGeloest') as $diagramm => $legende): ?>
+			<div class="sa-stat-diagramm">
+				<div class="sa-stat-legende">
+					<span class="sa-stat-farbe sa-stat-farbe--dunkel"></span><?= $t[$legende][0] ?>
+					<span class="sa-stat-farbe sa-stat-farbe--hell"></span><?= $t[$legende][1] ?>
+				</div>
+				<div class="sa-stat-scroll"><?= $this->$diagramm ?></div>
+			</div>
+		<?php endforeach; ?>
+
+		<h3 class="sa-stat-zwischentitel"><?= $t['meistgespielt'] ?></h3>
+		<?php if (empty($this->meistgespielt)): ?>
+			<p class="tl_help"><?= $t['keineMitglieder'] ?></p>
+		<?php else: ?>
+			<div class="sa-stat-scroll">
+				<table class="tl_listing sa-stat-tabelle">
+					<thead>
+						<tr>
+							<th class="rechts"><?= $t['platz'] ?></th>
+							<th class="rechts"><?= $t['gespielt'] ?></th>
+							<th class="rechts"><?= $t['geloestSpalte'] ?></th>
+							<th><?= $t['aufgabe'] ?></th>
+							<th class="rechts"><?= $t['wertung'] ?></th>
+							<th class="rechts"><?= $t['beliebtheit'] ?></th>
+						</tr>
+					</thead>
+					<tbody>
+						<?php foreach ($this->meistgespielt as $i => $z): ?>
+							<tr class="<?= $i % 2 ? 'even' : 'odd' ?>">
+								<td class="rechts"><?= $i + 1 ?></td>
+								<td class="rechts"><strong><?= $zahl($z['gespielt']) ?></strong></td>
+								<td class="rechts"><?= $zahl($z['geloest']) ?></td>
+								<td><?= $z['lichessId'] ? 'Lichess '.Contao\StringUtil::specialchars($z['lichessId']) : 'ID '.(int) $z['id'].' ('.Contao\StringUtil::specialchars($z['quelle']).')' ?></td>
+								<td class="rechts"><?= (int) $z['wertung'] ?></td>
+								<td class="rechts"><?= (int) $z['beliebtheit'] ?></td>
+							</tr>
+						<?php endforeach; ?>
+					</tbody>
+				</table>
+			</div>
+		<?php endif; ?>
+
+		<h3 class="sa-stat-zwischentitel"><?= $t['aktivste'] ?></h3>
+		<?php if (empty($this->aktivste)): ?>
+			<p class="tl_help"><?= $t['keineMitglieder'] ?></p>
+		<?php else: ?>
+			<div class="sa-stat-scroll">
+				<table class="tl_listing sa-stat-tabelle">
+					<thead>
+						<tr>
+							<th class="rechts"><?= $t['platz'] ?></th>
+							<th class="rechts"><?= $t['gespielt'] ?></th>
+							<th class="rechts"><?= $t['geloestSpalte'] ?></th>
+							<th><?= $t['name'] ?></th>
+							<th class="rechts"><?= $t['aktuelleWertung'] ?></th>
+						</tr>
+					</thead>
+					<tbody>
+						<?php foreach ($this->aktivste as $i => $z): ?>
+							<tr class="<?= $i % 2 ? 'even' : 'odd' ?>">
+								<td class="rechts"><?= $i + 1 ?></td>
+								<td class="rechts"><strong><?= $zahl($z['gespielt']) ?></strong></td>
+								<td class="rechts"><?= $zahl($z['geloest']) ?></td>
+								<td><?= Contao\StringUtil::specialchars($z['name']) ?></td>
+								<td class="rechts"><?= $z['wertung'] ?></td>
+							</tr>
+						<?php endforeach; ?>
+					</tbody>
+				</table>
+			</div>
+		<?php endif; ?>
+
+		<p class="tl_help"><?= $t['hinweis'] ?></p>
+
+	<?php endif; ?>
+
+</div>

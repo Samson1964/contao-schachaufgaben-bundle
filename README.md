@@ -90,6 +90,23 @@ gespeichert. Die Website führt ihre eigene Statistik:
 
 Beim Update von 1.0.0 setzt eine Migration die dort übernommenen Lichess-Werte einmalig auf 0.
 
+### Statistik im Backend
+
+Unter **Inhalte → Schachaufgaben → Statistik** (Knopf oben in der Aufgabenliste) zeigt das
+Backend, wie das Training genutzt wird – aufgebaut wie die Statistik des counter-Bundles:
+
+* Zeitraum **Tag**, **Monat** oder **Jahr**, mit „zurück", „vor" und „bis heute" zum Blättern.
+* Kennzahlen: Aufgaben aufgerufen, gespielt (erster Zug oder „Lösung zeigen"), gelöst und
+  nicht gelöst, jeweils getrennt nach Mitgliedern und Gästen; dazu Lösungsquote und die Zahl
+  der Mitglieder, die im Zeitraum zum ersten Mal trainiert haben.
+* Zwei Balkendiagramme (Stunden, Tage oder Monate): gespielt vor aufgerufen, gelöst vor gespielt.
+* Die 20 meistgespielten Aufgaben und die 20 aktivsten Mitglieder des Zeitraums.
+
+Gezählt wird stündlich in `tl_schachaufgaben_statistik` (eine Zeile je Stunde, Art und
+Mitglied/Gast), damit die Tabelle auch bei viel Betrieb klein bleibt. Die Zählung beginnt mit
+Fassung 1.4.0; frühere Zugriffe sind nicht erfasst. Die Tabellen der Aufgaben und Mitglieder
+stammen aus den Versuchen und reichen daher weiter zurück.
+
 ### Eröffnungen
 
 Die Eröffnungsnamen von Lichess (etwa `Sicilian_Defense_Najdorf_Variation`) werden im

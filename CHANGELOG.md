@@ -1,5 +1,16 @@
 # Schachaufgaben-Bundle Changelog
 
+## Version 1.4.0 (2026-09-28)
+
+* Add: Statistik der Zugriffe und gespielten Aufgaben im Backend, als globale Operation
+  „Statistik" unter Inhalte → Schachaufgaben. Aufbau nach der Statistik des counter-Bundles:
+  Tag, Monat und Jahr zum Blättern, Kennzahlen (aufgerufen, gespielt, gelöst, nicht gelöst,
+  jeweils nach Mitgliedern und Gästen, Lösungsquote, neue Mitglieder), zwei SVG-Balkendiagramme
+  und Tabellen der meistgespielten Aufgaben und aktivsten Mitglieder.
+* Add: Tabelle `tl_schachaufgaben_statistik` zählt stündlich je Art und Mitglied/Gast. Gezählt
+  wird beim Stellen einer Aufgabe, beim ersten Zug und beim Ergebnis; ein bloßer Aufruf legt
+  weiterhin keinen Versuch an. Die Zählung beginnt mit dieser Fassung.
+
 ## Version 1.3.0 (2026-09-28)
 
 * Add: PGN-Import eigener Aufgaben im Backend (Inhalte → Schachaufgaben → PGN-Import): Jede

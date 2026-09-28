@@ -112,3 +112,43 @@ $GLOBALS['TL_LANG']['tl_schachaufgaben']['pgn_seite'] = array
 	'fehlerbeispiele'  => 'Not imported (excerpt):',
 	'serverfehler'     => 'The server responded with an error',
 );
+
+// Statistik (do=schachaufgaben&key=statistik)
+$GLOBALS['TL_LANG']['tl_schachaufgaben']['statistik'] = array('Statistics', 'Analyse page views and puzzles played');
+$GLOBALS['TL_LANG']['tl_schachaufgaben']['statistik_seite'] = array
+(
+	'zurueckModul'    => 'Go back',
+	'ueberschrift'    => 'Statistics of views and puzzles played',
+	'zeitraumTitel'   => 'Period',
+	'ebene_tag'       => 'Day',
+	'ebene_monat'     => 'Month',
+	'ebene_jahr'      => 'Year',
+	'zurueck'         => 'back',
+	'vor'             => 'forward',
+	'heute'           => 'until today',
+	'bestand'         => '%s published puzzles · %s members with a rating',
+	'keineDaten'      => 'Nothing was counted for this period. Use "back" to go to an earlier period; the buttons above turn the day into a whole month or year.',
+	'art_aufruf'      => 'puzzles viewed',
+	'art_begonnen'    => 'puzzles played',
+	'art_geloest'     => 'solved',
+	'art_nichtgeloest' => 'not solved',
+	'davon'           => '%s members · %s guests',
+	'quote'           => 'Solving rate',
+	'neueSpieler'     => '%s new members in this period',
+	'diagrammAufrufe' => 'Views and puzzles played',
+	'diagrammGeloest' => 'Puzzles played and solved',
+	'legendeAufrufe'  => array('played', 'viewed'),
+	'legendeGeloest'  => array('solved', 'played'),
+	'meistgespielt'   => 'Most played puzzles (members)',
+	'aktivste'        => 'Most active members',
+	'keineMitglieder' => 'No members played in this period.',
+	'platz'           => 'Rank',
+	'gespielt'        => 'Played',
+	'geloestSpalte'   => 'Solved',
+	'aufgabe'         => 'Puzzle',
+	'wertung'         => 'Rating',
+	'beliebtheit'     => 'Popularity',
+	'name'            => 'Name',
+	'aktuelleWertung' => 'Current rating',
+	'hinweis'         => 'Every puzzle shown counts as viewed; every puzzle with at least one move or "show solution" counts as played. Counting starts with version 1.4.0. The rankings are based on the members’ attempts; guests are not included there.',
+);

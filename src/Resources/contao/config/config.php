@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 use Schachbulle\ContaoSchachaufgabenBundle\Backend\ImportSeite;
 use Schachbulle\ContaoSchachaufgabenBundle\Backend\PgnImportSeite;
+use Schachbulle\ContaoSchachaufgabenBundle\Backend\StatistikSeite;
 use Schachbulle\ContaoSchachaufgabenBundle\Model\SchachaufgabeModel;
 use Schachbulle\ContaoSchachaufgabenBundle\Module\BestenlisteModule;
 use Schachbulle\ContaoSchachaufgabenBundle\Module\RanglisteModule;
@@ -25,6 +26,8 @@ $GLOBALS['BE_MOD']['content']['schachaufgaben'] = array
 	'import' => array(ImportSeite::class, 'ausfuehren'),
 	// Import eigener Aufgaben aus einer PGN-Datei (do=schachaufgaben&key=pgn)
 	'pgn'    => array(PgnImportSeite::class, 'ausfuehren'),
+	// Statistik der Zugriffe und gespielten Aufgaben (do=schachaufgaben&key=statistik)
+	'statistik' => array(StatistikSeite::class, 'ausfuehren'),
 );
 
 // Frontend-Module in eigener Gruppe

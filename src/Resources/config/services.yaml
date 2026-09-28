@@ -34,6 +34,10 @@ services:
             $projektVerzeichnis: '%kernel.project_dir%'
             $uploadPfad: '%contao.upload_path%'
 
+    # Ebenso öffentlich (key-Callback), für die Statistik
+    Schachbulle\ContaoSchachaufgabenBundle\Backend\StatistikSeite:
+        public: true
+
     # Ebenso öffentlich (key-Callback), für den PGN-Import
     Schachbulle\ContaoSchachaufgabenBundle\Backend\PgnImportSeite:
         public: true
