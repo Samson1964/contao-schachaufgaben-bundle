@@ -98,6 +98,37 @@ class TrainingController
 	}
 
 	/**
+	 * Vermerkt den ersten Zug einer Aufgabe (POST, JSON {id}).
+	 *
+	 * Erst damit entstehen die Einträge des Spielers zu dieser Aufgabe (siehe
+	 * Training::beginnen()). Ein wiederholter Aufruf schadet nicht.
+	 *
+	 * @param Request $request Die Anfrage
+	 *
+	 * @return JsonResponse {"begonnen": true}; 415 bei falschem Inhaltstyp,
+	 *                      400 ohne gültige id, 409 wenn die Aufgabe diesem
+	 *                      Spieler nicht gestellt wurde
+	 */
+	public function beginn(Request $request): JsonResponse
+	{
+		if (!str_starts_with((string) $request->headers->get('Content-Type'), 'application/json')) {
+			return $this->antwort(array('fehler' => 'Erwartet wird application/json.'), 415);
+		}
+
+		$daten = json_decode((string) $request->getContent(), true);
+
+		if (!\is_array($daten) || !\is_int($daten['id'] ?? null)) {
+			return $this->antwort(array('fehler' => 'Erwartet wird id (Zahl).'), 400);
+		}
+
+		if (!$this->training->beginnen($this->memberId(), $request->getSession(), $daten['id'])) {
+			return $this->antwort(array('fehler' => 'Diese Aufgabe wurde nicht gestellt.'), 409);
+		}
+
+		return $this->antwort(array('begonnen' => true));
+	}
+
+	/**
 	 * Nimmt eine Bewertung entgegen (POST, JSON {id, stimme}).
 	 *
 	 * @param Request $request Die Anfrage

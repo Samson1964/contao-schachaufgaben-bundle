@@ -84,6 +84,7 @@ class TrainingModule extends Module
 		$this->Template->texte = $GLOBALS['TL_LANG']['MSC']['schachaufgaben'] ?? array();
 		$this->Template->konfiguration = array(
 			'aufgabeUrl'   => $router->generate('schachaufgaben_aufgabe'),
+			'beginnUrl'    => $router->generate('schachaufgaben_beginn'),
 			'ergebnisUrl'  => $router->generate('schachaufgaben_ergebnis'),
 			'bewertungUrl' => $router->generate('schachaufgaben_bewertung'),
 			'assetsUrl'    => $basis.'vendor/cm-chessboard/assets/',

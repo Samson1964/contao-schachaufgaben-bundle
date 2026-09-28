@@ -114,6 +114,7 @@ class SchachaufgabenTraining {
         this.index = 0
         this.fehlerGemacht = false
         this.gemeldet = false
+        this.begonnen = false
         this.beendet = false
         this.ergebnis = null
         this.chess = new Chess(daten.fen)
@@ -207,6 +208,7 @@ class SchachaufgabenTraining {
      * @param {string} [umwandlung] Figur bei Bauernumwandlung (q, r, b, n)
      */
     async spielerZug(von, nach, umwandlung) {
+        this.beginnen()
         this.brett.removeMarkers(MARKER_FALSCH)
         const zug = this.chess.move({from: von, to: nach, promotion: umwandlung})
         const uci = zug.from + zug.to + (zug.promotion || "")
@@ -279,6 +281,27 @@ class SchachaufgabenTraining {
         this.feld.naechste.focus()
         this.status(text, art)
         this.infoAnzeigen()
+    }
+
+    /**
+     * Meldet dem Server den ersten Zug – höchstens einmal je Aufgabe.
+     *
+     * Erst damit legt der Server die Einträge des Spielers zu dieser Aufgabe an;
+     * das bloße Aufrufen einer Aufgabe hinterlässt nichts. Die Antwort wird
+     * nicht abgewartet: Kommt das Ergebnis schneller, holt der Server den
+     * Beginn dort nach.
+     */
+    beginnen() {
+        if (this.begonnen) {
+            return
+        }
+        this.begonnen = true
+        fetch(this.konfiguration.beginnUrl, {
+            method: "POST",
+            headers: {"Content-Type": "application/json", "Accept": "application/json", "X-Requested-With": "XMLHttpRequest"},
+            credentials: "same-origin",
+            body: JSON.stringify({id: this.aufgabe.id})
+        }).catch(fehler => console.error("Schachaufgaben:", fehler))
     }
 
     /**

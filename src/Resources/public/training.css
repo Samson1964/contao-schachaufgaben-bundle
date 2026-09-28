@@ -22,6 +22,23 @@
 	aspect-ratio: 1;
 }
 
+/*
+ * Die Figur, die beim Ziehen dem Zeiger folgt, hängt cm-chessboard als eigenes
+ * SVG direkt an <body> und positioniert es absolut – ohne z-index. Hat das
+ * Theme Seitenbereiche mit eigenem Stapelkontext und Hintergrund, liegt sie
+ * dahinter und bleibt unsichtbar, bis man loslässt. Die übrigen Angaben
+ * schützen vor Theme-Regeln für svg allgemein (etwa height: auto oder max-width).
+ */
+body > svg.cm-chessboard-draggable-piece {
+	z-index: 10000;
+	display: block;
+	visibility: visible;
+	opacity: 1;
+	overflow: visible;
+	max-width: none;
+	max-height: none;
+}
+
 .schachaufgaben-seite > * {
 	margin: 0 0 1rem;
 }

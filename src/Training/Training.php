@@ -39,6 +39,13 @@ class Training
 	private const SITZUNG_STIMMEN = 'schachaufgaben_stimmen';
 
 	/**
+	 * So viele gestellte, noch nicht gewertete Aufgaben merkt sich die Sitzung.
+	 * Mehr als eine, damit sich zwei Browser-Tabs nicht gegenseitig die offene
+	 * Aufgabe wegnehmen.
+	 */
+	private const MAX_OFFEN = 10;
+
+	/**
 	 * Ab dieser Abweichung (RD) gilt eine Wertung als gesichert. Erst dann
 	 * zählt sie als Bestwertung. Lichess nennt Wertungen mit größerer
 	 * Abweichung „vorläufig"; bei neuen Spielern (Start 350) ist das nach etwa
@@ -74,14 +81,15 @@ class Training
 	}
 
 	/**
-	 * Stellt die nächste Aufgabe und merkt sie sich als gestellt.
+	 * Stellt die nächste Aufgabe und merkt sie sich in der Sitzung als offen.
 	 *
-	 * Bei Mitgliedern entsteht sofort ein Eintrag in tl_schachaufgaben_versuch,
-	 * bei Gästen ein Eintrag in der Merkliste der Sitzung. Die Aufgabe wird
-	 * damit nie ein zweites Mal gestellt, auch wenn sie übersprungen wird.
+	 * Gespeichert wird dabei noch nichts: Erst der erste Zug (beginnen()) legt
+	 * die Einträge in tl_schachaufgaben_spieler und tl_schachaufgaben_versuch
+	 * bzw. in der Merkliste eines Gastes an. Eine nur angesehene und dann
+	 * übersprungene Aufgabe kann deshalb später wieder gestellt werden.
 	 *
 	 * @param int|null         $memberId ID des angemeldeten Mitglieds, null für Gäste
-	 * @param SessionInterface $session  Die Sitzung (wird bei Gästen beschrieben)
+	 * @param SessionInterface $session  Die Sitzung (vermerkt die offene Aufgabe)
 	 *
 	 * @return array<string, mixed>|null Daten für den Browser: id, fen, zuege
 	 *                                   und der Stand des Spielers; null, wenn
@@ -99,24 +107,9 @@ class Training
 		}
 
 		$id = (int) $aufgabe['id'];
-
-		if (null !== $memberId) {
-			// Beim allerersten Mal entsteht hier die Zeile des Mitglieds, mit dem
-			// Zeitpunkt der ersten Nutzung; die Wertung hat noch die Startwerte
-			$this->connection->executeStatement(
-				'INSERT IGNORE INTO tl_schachaufgaben_spieler (tstamp, memberId, ersteNutzung) VALUES (?, ?, ?)',
-				array(time(), $memberId, time())
-			);
-
-			$this->connection->executeStatement(
-				'INSERT IGNORE INTO tl_schachaufgaben_versuch (tstamp, memberId, aufgabe, wertungVorher) VALUES (?, ?, ?, ?)',
-				array(time(), $memberId, $id, $this->runden($spieler['wertung']->getWertung()))
-			);
-		} else {
-			$gesehen[] = $id;
-			$session->set(self::SITZUNG_GESEHEN, \array_slice($gesehen, -self::MAX_GESEHEN));
-			$session->set(self::SITZUNG_OFFEN, $id);
-		}
+		$offen = $this->offen($session);
+		$offen[] = $id;
+		$session->set(self::SITZUNG_OFFEN, \array_slice(array_values(array_unique($offen)), -self::MAX_OFFEN));
 
 		return array(
 			'id'      => $id,
@@ -124,6 +117,69 @@ class Training
 			'zuege'   => preg_split('/\s+/', trim((string) $aufgabe['zuege']), -1, PREG_SPLIT_NO_EMPTY),
 			'spieler' => $this->spielerDaten($spieler, null === $memberId),
 		);
+	}
+
+	/**
+	 * Vermerkt den Beginn einer gestellten Aufgabe: der Spieler hat den ersten
+	 * Zug gemacht (oder sich die Lösung zeigen lassen).
+	 *
+	 * Erst jetzt entstehen die Einträge: bei Mitgliedern die Zeile in
+	 * tl_schachaufgaben_spieler (samt erster Nutzung, falls es die allererste
+	 * Aufgabe ist) und der Eintrag in tl_schachaufgaben_versuch, bei Gästen der
+	 * Eintrag in der Merkliste. Damit wird die Aufgabe nie ein zweites Mal
+	 * gestellt. Ein wiederholter Aufruf ändert nichts.
+	 *
+	 * @param int|null         $memberId  ID des Mitglieds, oder null für Gäste
+	 * @param SessionInterface $session   Die Sitzung
+	 * @param int              $aufgabeId ID der Aufgabe
+	 *
+	 * @return bool true, wenn die Aufgabe begonnen ist (jetzt oder schon
+	 *              vorher); false, wenn sie diesem Spieler nicht gestellt wurde
+	 */
+	public function beginnen(?int $memberId, SessionInterface $session, int $aufgabeId): bool
+	{
+		$offen = \in_array($aufgabeId, $this->offen($session), true);
+
+		if (null !== $memberId) {
+			if (false !== $this->connection->fetchOne('SELECT 1 FROM tl_schachaufgaben_versuch WHERE memberId=? AND aufgabe=?', array($memberId, $aufgabeId))) {
+				return true;
+			}
+
+			if (!$offen) {
+				return false;
+			}
+
+			$spieler = $this->spielerLaden($memberId, $session);
+
+			// Bei der allerersten Aufgabe entsteht hier die Zeile des Mitglieds mit
+			// dem Zeitpunkt der ersten Nutzung; die Wertung hat noch die Startwerte
+			$this->connection->executeStatement(
+				'INSERT IGNORE INTO tl_schachaufgaben_spieler (tstamp, memberId, ersteNutzung) VALUES (?, ?, ?)',
+				array(time(), $memberId, time())
+			);
+
+			$this->connection->executeStatement(
+				'INSERT IGNORE INTO tl_schachaufgaben_versuch (tstamp, memberId, aufgabe, wertungVorher) VALUES (?, ?, ?, ?)',
+				array(time(), $memberId, $aufgabeId, $this->runden($spieler['wertung']->getWertung()))
+			);
+
+			return true;
+		}
+
+		$gesehen = (array) $session->get(self::SITZUNG_GESEHEN, array());
+
+		if (\in_array($aufgabeId, $gesehen, true)) {
+			return true;
+		}
+
+		if (!$offen) {
+			return false;
+		}
+
+		$gesehen[] = $aufgabeId;
+		$session->set(self::SITZUNG_GESEHEN, \array_slice($gesehen, -self::MAX_GESEHEN));
+
+		return true;
 	}
 
 	/**
@@ -147,7 +203,8 @@ class Training
 	{
 		$aufgabe = $this->connection->fetchAssociative('SELECT * FROM tl_schachaufgaben WHERE id=?', array($aufgabeId));
 
-		if (false === $aufgabe || !$this->offeneAufgabeAbschliessen($memberId, $session, $aufgabeId)) {
+		// „Lösung zeigen" ohne vorherigen Zug: der Beginn wird hier nachgeholt
+		if (false === $aufgabe || !$this->beginnen($memberId, $session, $aufgabeId) || !$this->offeneAufgabeAbschliessen($memberId, $session, $aufgabeId)) {
 			return null;
 		}
 
@@ -238,7 +295,7 @@ class Training
 		} else {
 			$gesehen = (array) $session->get(self::SITZUNG_GESEHEN, array());
 
-			if (!\in_array($aufgabeId, $gesehen, true) || (int) $session->get(self::SITZUNG_OFFEN, 0) === $aufgabeId) {
+			if (!\in_array($aufgabeId, $gesehen, true) || \in_array($aufgabeId, $this->offen($session), true)) {
 				return null;
 			}
 
@@ -294,8 +351,9 @@ class Training
 	 *
 	 * Bei Mitgliedern geschieht das atomar per UPDATE mit Bedingung
 	 * gewertet='', sodass zwei gleichzeitige Meldungen (etwa aus zwei Tabs)
-	 * nicht doppelt zählen. Bei Gästen muss die Aufgabe die in der Sitzung
-	 * vermerkte offene Aufgabe sein.
+	 * nicht doppelt zählen. Bei Gästen muss die Aufgabe unter den in der
+	 * Sitzung vermerkten offenen Aufgaben sein. In beiden Fällen ist sie danach
+	 * nicht mehr offen.
 	 *
 	 * @param int|null         $memberId  ID des Mitglieds, oder null
 	 * @param SessionInterface $session   Die Sitzung
@@ -305,20 +363,39 @@ class Training
 	 */
 	private function offeneAufgabeAbschliessen(?int $memberId, SessionInterface $session, int $aufgabeId): bool
 	{
+		$offen = $this->offen($session);
+
 		if (null !== $memberId) {
-			return 1 === (int) $this->connection->executeStatement(
+			$frei = 1 === (int) $this->connection->executeStatement(
 				"UPDATE tl_schachaufgaben_versuch SET gewertet='1' WHERE memberId=? AND aufgabe=? AND gewertet=''",
 				array($memberId, $aufgabeId)
 			);
+		} else {
+			$frei = \in_array($aufgabeId, $offen, true);
 		}
 
-		if ((int) $session->get(self::SITZUNG_OFFEN, 0) !== $aufgabeId) {
-			return false;
+		if ($frei) {
+			$session->set(self::SITZUNG_OFFEN, array_values(array_diff($offen, array($aufgabeId))));
 		}
 
-		$session->remove(self::SITZUNG_OFFEN);
+		return $frei;
+	}
 
-		return true;
+	/**
+	 * Liefert die in der Sitzung vermerkten offenen Aufgaben.
+	 *
+	 * Bis 1.2.0 stand dort bei Gästen eine einzelne ID statt einer Liste; auch
+	 * diese Form wird noch gelesen, damit laufende Sitzungen das Update überstehen.
+	 *
+	 * @param SessionInterface $session Die Sitzung
+	 *
+	 * @return array<int, int> IDs der gestellten, noch nicht gewerteten Aufgaben
+	 */
+	private function offen(SessionInterface $session): array
+	{
+		$wert = $session->get(self::SITZUNG_OFFEN, array());
+
+		return array_map('intval', \is_array($wert) ? $wert : array($wert));
 	}
 
 	/**

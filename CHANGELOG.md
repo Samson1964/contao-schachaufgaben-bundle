@@ -1,5 +1,15 @@
 # Schachaufgaben-Bundle Changelog
 
+## Version 1.2.1 (2026-09-28)
+
+* Change: Das bloße Aufrufen einer Aufgabe speichert nichts mehr. Einträge in
+  `tl_schachaufgaben_spieler` und `tl_schachaufgaben_versuch` (bei Gästen in der Merkliste)
+  entstehen erst mit dem ersten Zug (neue Route `/_schachaufgaben/beginn`) oder mit
+  „Lösung zeigen". Nur angesehene Aufgaben können dadurch später wieder gestellt werden.
+  Die Sitzung merkt sich mehrere offene Aufgaben, damit sich zwei Tabs nicht stören.
+* Fix: Die gezogene Figur verschwand während des Ziehens hinter Seitenbereichen des Themes;
+  sie bekommt jetzt einen `z-index`.
+
 ## Version 1.2.0 (2026-09-27)
 
 * Add: Höchste erreichte Wertung mit Datum und Datum der ersten Benutzung je Mitglied

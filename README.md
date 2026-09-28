@@ -46,9 +46,10 @@ Anmeldung wird als Gast gespielt.
 * Die nächste Aufgabe liegt **zufällig in der Nähe der eigenen Wertung** (±100 Punkte, aus
   den zehn nächstgelegenen wird gelost). Mit steigender Wertung werden die Aufgaben also von
   selbst schwerer, nach Fehlern leichter.
-* **Keine Aufgabe kommt zweimal.** Bei Mitgliedern wird jede gestellte Aufgabe sofort in
-  `tl_schachaufgaben_versuch` vermerkt – auch übersprungene oder durch Neuladen verworfene.
-  Gäste haben eine Merkliste in der Sitzung, die für die Dauer des Besuchs gilt.
+* **Keine begonnene Aufgabe kommt zweimal.** Gespeichert wird erst mit dem ersten Zug auf
+  dem Brett (oder mit „Lösung zeigen"): bei Mitgliedern in `tl_schachaufgaben_versuch`, bei
+  Gästen in einer Merkliste der Sitzung. Das bloße Aufrufen einer Aufgabe hinterlässt
+  nichts; eine nur angesehene und übersprungene Aufgabe kann später wieder kommen.
 * Die Wertung einer Aufgabe ändert sich nur durch Mitglieder, damit Gäste sie nicht
   verfälschen können.
 * Gäste behalten ihre Wertung nur für die Sitzung und erscheinen nicht in der Rangliste.
@@ -102,11 +103,12 @@ deutsche Figurenbuchstaben („Bd3" wird „Ld3"). In anderen Sprachen erscheint
 Das Brett ist [cm-chessboard](https://github.com/shaack/cm-chessboard) 8.14.2 (MIT), die
 Zugprüfung [chess.js](https://github.com/jhlywa/chess.js) 1.4.0 (BSD-2-Clause). Beide liegen
 unverändert (nur ohne Source-Map-Verweise) unter `src/Resources/public/vendor/` samt
-Lizenzdatei. Das Frontend spricht über drei Routen mit dem Server:
+Lizenzdatei. Das Frontend spricht über vier Routen mit dem Server:
 
 | Route | Zweck |
 | --- | --- |
 | `GET /_schachaufgaben/aufgabe` | nächste Aufgabe stellen |
+| `POST /_schachaufgaben/beginn` | erster Zug, JSON `{"id": 123}`; erst jetzt wird gespeichert |
 | `POST /_schachaufgaben/ergebnis` | Ergebnis melden, JSON `{"id": 123, "geloest": true}` |
 | `POST /_schachaufgaben/bewertung` | Aufgabe bewerten, JSON `{"id": 123, "stimme": 1}` (1, -1 oder 0) |
 
