@@ -10,6 +10,7 @@ declare(strict_types=1);
  */
 
 use Schachbulle\ContaoSchachaufgabenBundle\Backend\ImportSeite;
+use Schachbulle\ContaoSchachaufgabenBundle\Backend\PgnImportSeite;
 use Schachbulle\ContaoSchachaufgabenBundle\Model\SchachaufgabeModel;
 use Schachbulle\ContaoSchachaufgabenBundle\Module\BestenlisteModule;
 use Schachbulle\ContaoSchachaufgabenBundle\Module\RanglisteModule;
@@ -22,6 +23,8 @@ $GLOBALS['BE_MOD']['content']['schachaufgaben'] = array
 	'tables' => array('tl_schachaufgaben', 'tl_schachaufgaben_ranglistenstand'),
 	// Import der Lichess-Sammlung (do=schachaufgaben&key=import)
 	'import' => array(ImportSeite::class, 'ausfuehren'),
+	// Import eigener Aufgaben aus einer PGN-Datei (do=schachaufgaben&key=pgn)
+	'pgn'    => array(PgnImportSeite::class, 'ausfuehren'),
 );
 
 // Frontend-Module in eigener Gruppe

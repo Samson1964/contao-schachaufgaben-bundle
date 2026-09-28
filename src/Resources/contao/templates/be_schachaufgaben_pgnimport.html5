@@ -1,0 +1,158 @@
+<?php $t = $this->texte; ?>
+<style>
+  #schachaufgaben-pgn .schachaufgaben-abstand { margin: 0 15px 12px; }
+  #schachaufgaben-pgn [data-bereich] { padding: 12px 15px; }
+  #schachaufgaben-pgn [data-bereich] p { margin: 0 0 8px; }
+</style>
+<div id="tl_buttons">
+  <a href="<?= $this->zurueck ?>" class="header_back" title="<?= Contao\StringUtil::specialchars($t['zurueck']) ?>" accesskey="b"><?= $t['zurueck'] ?></a>
+</div>
+
+<form class="tl_form" id="schachaufgaben-pgn" data-adresse="<?= Contao\StringUtil::specialchars($this->adresse) ?>" data-token="<?= Contao\StringUtil::specialchars($this->token) ?>" data-block="<?= (int) $this->block ?>">
+  <div class="tl_formbody_edit">
+    <div class="tl_tbox">
+      <p class="tl_info schachaufgaben-abstand"><?= $t['anleitung'] ?></p>
+      <div class="widget">
+        <h3><label for="schachaufgaben-pgn-datei"><?= $t['datei'] ?></label></h3>
+        <input type="file" id="schachaufgaben-pgn-datei" accept=".pgn,text/plain" required>
+      </div>
+    </div>
+
+    <fieldset class="tl_box">
+      <legend><?= $t['optionen_legend'] ?></legend>
+      <div class="widget clr">
+        <div class="tl_checkbox_single_container">
+          <input type="checkbox" id="schachaufgaben-pgn-spielerZuerst" value="1" class="tl_checkbox" checked>
+          <label for="schachaufgaben-pgn-spielerZuerst"><?= $t['spielerZuerst'][0] ?></label>
+        </div>
+        <p class="tl_help tl_tip"><?= $t['spielerZuerst'][1] ?></p>
+      </div>
+      <div class="w50 widget">
+        <h3><label for="schachaufgaben-pgn-wertung"><?= $t['wertung'][0] ?></label></h3>
+        <input type="number" name="wertung" id="schachaufgaben-pgn-wertung" class="tl_text" value="1500" min="400" max="3500">
+        <p class="tl_help tl_tip"><?= $t['wertung'][1] ?></p>
+      </div>
+      <div class="w50 widget">
+        <h3><label for="schachaufgaben-pgn-motive"><?= $t['motive'][0] ?></label></h3>
+        <input type="text" name="motive" id="schachaufgaben-pgn-motive" class="tl_text">
+        <p class="tl_help tl_tip"><?= $t['motive'][1] ?></p>
+      </div>
+      <div class="widget clr">
+        <div class="tl_checkbox_single_container">
+          <input type="checkbox" name="unveroeffentlicht" id="schachaufgaben-pgn-unveroeffentlicht" value="1" class="tl_checkbox">
+          <label for="schachaufgaben-pgn-unveroeffentlicht"><?= $t['unveroeffentlicht'][0] ?></label>
+        </div>
+        <p class="tl_help tl_tip"><?= $t['unveroeffentlicht'][1] ?></p>
+      </div>
+    </fieldset>
+
+    <div class="tl_box" data-bereich hidden>
+      <p><strong data-meldung></strong></p>
+      <p data-zahlen></p>
+      <div data-fehler></div>
+    </div>
+  </div>
+
+  <div class="tl_formbody_submit">
+    <div class="tl_submit_container">
+      <button type="submit" class="tl_submit" data-aktion="pruefen"><?= $t['pruefen'] ?></button>
+      <button type="button" class="tl_submit" data-aktion="speichern" hidden><?= $t['speichern'] ?></button>
+    </div>
+  </div>
+</form>
+
+<script type="module">
+  import {pgnZerlegen, aufgabeAusPgn} from '<?= $this->pgnSkript ?>';
+  import {Chess} from '<?= $this->chessSkript ?>';
+
+  const formular = document.getElementById('schachaufgaben-pgn');
+  if (formular && !formular.dataset.bereit) {
+    formular.dataset.bereit = '1';
+
+    const texte = <?= json_encode($t, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP) ?>;
+    const bereich = formular.querySelector('[data-bereich]');
+    const meldung = bereich.querySelector('[data-meldung]');
+    const zahlen = bereich.querySelector('[data-zahlen]');
+    const fehlerListe = bereich.querySelector('[data-fehler]');
+    const pruefen = formular.querySelector('[data-aktion="pruefen"]');
+    const speichern = formular.querySelector('[data-aktion="speichern"]');
+    const block = parseInt(formular.dataset.block, 10) || 200;
+    let aufgaben = [];
+
+    const fehlerZeigen = (titel, liste) => {
+      fehlerListe.textContent = '';
+      if (!liste.length) {
+        return;
+      }
+      const p = document.createElement('p');
+      p.textContent = titel;
+      const ul = document.createElement('ul');
+      liste.slice(0, 20).forEach(text => {
+        const li = document.createElement('li');
+        li.textContent = text;
+        ul.append(li);
+      });
+      fehlerListe.append(p, ul);
+    };
+
+    // Schritt 1: Datei im Browser lesen und umrechnen, noch nichts speichern
+    formular.addEventListener('submit', async ereignis => {
+      ereignis.preventDefault();
+      const datei = formular.querySelector('#schachaufgaben-pgn-datei').files[0];
+      if (!datei) {
+        return;
+      }
+      const spielerZuerst = formular.querySelector('#schachaufgaben-pgn-spielerZuerst').checked;
+      const partien = pgnZerlegen(await datei.text());
+      const fehler = [];
+      aufgaben = [];
+      partien.forEach((partie, index) => {
+        try {
+          aufgaben.push(aufgabeAusPgn(partie, Chess, spielerZuerst));
+        } catch (e) {
+          fehler.push(texte.partie.replace('%d', index + 1) + ': ' + e.message);
+        }
+      });
+      bereich.hidden = false;
+      meldung.textContent = texte.geprueft;
+      zahlen.textContent = texte.vorschau.replace('%d', partien.length).replace('%d', aufgaben.length).replace('%d', fehler.length);
+      fehlerZeigen(texte.fehlerbeispiele, fehler);
+      speichern.hidden = aufgaben.length === 0;
+    });
+
+    // Schritt 2: in Blöcken an den Server schicken
+    speichern.addEventListener('click', async () => {
+      speichern.disabled = pruefen.disabled = true;
+      const summe = {neu: 0, doppelt: 0, fehlerhaft: 0, fehler: []};
+      meldung.textContent = texte.speichert;
+      try {
+        for (let start = 0; start < aufgaben.length; start += block) {
+          const daten = new FormData();
+          daten.set('aktion', 'speichern');
+          daten.set('REQUEST_TOKEN', formular.dataset.token);
+          daten.set('aufgaben', JSON.stringify(aufgaben.slice(start, start + block)));
+          daten.set('wertung', formular.querySelector('#schachaufgaben-pgn-wertung').value);
+          daten.set('motive', formular.querySelector('#schachaufgaben-pgn-motive').value);
+          daten.set('unveroeffentlicht', formular.querySelector('#schachaufgaben-pgn-unveroeffentlicht').checked ? '1' : '');
+          // Bewusst ohne „X-Requested-With", siehe PgnImportSeite::ausfuehren()
+          const antwort = await fetch(formular.dataset.adresse, {method: 'POST', body: daten, credentials: 'same-origin'});
+          const json = await antwort.json().catch(() => null);
+          if (!antwort.ok || !json) {
+            throw new Error((json && json.fehler) || texte.serverfehler + ' (HTTP ' + antwort.status + ')');
+          }
+          summe.neu += json.neu;
+          summe.doppelt += json.doppelt;
+          summe.fehlerhaft += json.fehlerhaft;
+          summe.fehler.push(...json.fehler);
+          zahlen.textContent = texte.ergebnis.replace('%d', summe.neu).replace('%d', summe.doppelt).replace('%d', summe.fehlerhaft);
+        }
+        meldung.textContent = texte.fertig;
+        fehlerZeigen(texte.fehlerbeispiele, summe.fehler);
+        speichern.hidden = true;
+      } catch (e) {
+        meldung.textContent = e.message;
+      }
+      speichern.disabled = pruefen.disabled = false;
+    });
+  }
+</script>

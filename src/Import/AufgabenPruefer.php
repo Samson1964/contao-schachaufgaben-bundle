@@ -94,25 +94,37 @@ class AufgabenPruefer
 	/**
 	 * Prüft eine Zugfolge in UCI-Schreibweise.
 	 *
-	 * Eine Aufgabe besteht aus dem auslösenden Gegnerzug und mindestens einem
-	 * Lösungszug. Da jede Aufgabe mit einem Zug des Spielers endet, ist die
-	 * Anzahl der Züge immer gerade.
+	 * Jede Aufgabe endet mit einem Zug des Spielers. Im Lichess-Format beginnt
+	 * sie mit dem auslösenden Gegnerzug; dann sind es mindestens zwei Züge und
+	 * immer eine gerade Anzahl. Zieht der Spieler zuerst (etwa bei Aufgaben aus
+	 * einer PGN-Sammlung), genügt ein Zug, und die Anzahl ist ungerade.
 	 *
-	 * @param string $zuege Züge wie „e2e4 e7e8q", durch Leerzeichen getrennt
+	 * @param string $zuege         Züge wie „e2e4 e7e8q", durch Leerzeichen getrennt
+	 * @param bool   $spielerZuerst true, wenn der erste Zug schon der Lösungszug ist
 	 *
 	 * @return string|null null bei gültiger Zugfolge, sonst eine deutsche
 	 *                     Fehlerbeschreibung
 	 */
-	public function pruefeZuege(string $zuege): ?string
+	public function pruefeZuege(string $zuege, bool $spielerZuerst = false): ?string
 	{
 		$liste = preg_split('/\s+/', trim($zuege), -1, PREG_SPLIT_NO_EMPTY) ?: array();
 
-		if (\count($liste) < 2) {
-			return 'Es werden mindestens zwei Züge benötigt: der Gegnerzug und ein Lösungszug.';
-		}
+		if ($spielerZuerst) {
+			if (0 === \count($liste)) {
+				return 'Es wird mindestens ein Lösungszug benötigt.';
+			}
 
-		if (0 !== \count($liste) % 2) {
-			return 'Die Anzahl der Züge muss gerade sein, weil die Aufgabe mit einem Zug des Spielers endet.';
+			if (1 !== \count($liste) % 2) {
+				return 'Die Anzahl der Züge muss ungerade sein: Der Spieler zieht zuerst, und die Aufgabe endet mit seinem Zug.';
+			}
+		} else {
+			if (\count($liste) < 2) {
+				return 'Es werden mindestens zwei Züge benötigt: der Gegnerzug und ein Lösungszug.';
+			}
+
+			if (0 !== \count($liste) % 2) {
+				return 'Die Anzahl der Züge muss gerade sein, weil die Aufgabe mit einem Zug des Spielers endet.';
+			}
 		}
 
 		foreach ($liste as $nummer => $zug) {

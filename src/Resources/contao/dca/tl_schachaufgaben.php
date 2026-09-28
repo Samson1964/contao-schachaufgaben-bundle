@@ -40,6 +40,8 @@ $GLOBALS['TL_DCA']['tl_schachaufgaben'] = array
 				'id'                => 'primary',
 				// Verhindert Doppelimporte; mehrere NULL-Werte (eigene Aufgaben) sind erlaubt
 				'lichessId'         => 'unique',
+				// Dasselbe für den PGN-Import: Prüfsumme aus FEN und Zügen
+				'schluessel'        => 'unique',
 				// Für die Suche nach einer passenden Aufgabe zur Wertung des Spielers
 				'published,wertung' => 'index',
 			)
@@ -68,6 +70,13 @@ $GLOBALS['TL_DCA']['tl_schachaufgaben'] = array
 				'href'  => 'table=tl_schachaufgaben_ranglistenstand',
 				'class' => 'header_css_import',
 				'icon'  => 'sync.svg',
+			),
+			'pgn' => array
+			(
+				'label' => &$GLOBALS['TL_LANG']['tl_schachaufgaben']['pgn'],
+				'href'  => 'key=pgn',
+				'class' => 'header_theme_import',
+				'icon'  => 'theme_import.svg',
 			),
 			'import' => array
 			(
@@ -121,7 +130,7 @@ $GLOBALS['TL_DCA']['tl_schachaufgaben'] = array
 
 	'palettes' => array
 	(
-		'default' => '{aufgabe_legend},fen,zuege,motive;{wertung_legend},wertung,wertungAbweichung,wertungVolatilitaet;{statistik_legend},spiele,beliebtheit,gefaellt,gefaelltNicht;{quelle_legend},quelle,lichessId,partieUrl,eroeffnung;{publish_legend},published',
+		'default' => '{aufgabe_legend},fen,zuege,spielerZuerst,motive;{wertung_legend},wertung,wertungAbweichung,wertungVolatilitaet;{statistik_legend},spiele,beliebtheit,gefaellt,gefaelltNicht;{quelle_legend},quelle,lichessId,partieUrl,eroeffnung;{publish_legend},published',
 	),
 
 	'fields' => array
@@ -148,6 +157,22 @@ $GLOBALS['TL_DCA']['tl_schachaufgaben'] = array
 			'inputType' => 'text',
 			'eval'      => array('mandatory' => true, 'maxlength' => 255, 'tl_class' => 'long'),
 			'sql'       => "varchar(255) NOT NULL default ''",
+		),
+		// Leer: Lichess-Format, der erste Zug ist der Gegnerzug, der die Aufgabe
+		// auslöst. '1': Der Spieler ist in der FEN schon am Zug (etwa PGN-Aufgaben).
+		'spielerZuerst' => array
+		(
+			'exclude'   => true,
+			'filter'    => true,
+			'inputType' => 'checkbox',
+			'eval'      => array('tl_class' => 'clr'),
+			'sql'       => "char(1) NOT NULL default ''",
+		),
+		// sha1 aus FEN und Zügen, nur bei PGN-Importen gesetzt; verhindert Dubletten
+		'schluessel' => array
+		(
+			'eval' => array('doNotCopy' => true),
+			'sql'  => 'varchar(40) NULL',
 		),
 		'motive' => array
 		(

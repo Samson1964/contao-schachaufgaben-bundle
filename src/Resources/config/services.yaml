@@ -33,3 +33,10 @@ services:
             $tokenName: '%contao.csrf_token_name%'
             $projektVerzeichnis: '%kernel.project_dir%'
             $uploadPfad: '%contao.upload_path%'
+
+    # Ebenso öffentlich (key-Callback), für den PGN-Import
+    Schachbulle\ContaoSchachaufgabenBundle\Backend\PgnImportSeite:
+        public: true
+        arguments:
+            $tokenManager: '@contao.csrf.token_manager'
+            $tokenName: '%contao.csrf_token_name%'

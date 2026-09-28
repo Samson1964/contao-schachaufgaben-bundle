@@ -88,6 +88,21 @@ class AufgabenPrueferTest extends TestCase
 	}
 
 	/**
+	 * Zieht der Spieler zuerst, sind ein Zug oder eine ungerade Anzahl richtig.
+	 */
+	public function testSpielerZuerst(): void
+	{
+		$pruefer = new AufgabenPruefer();
+
+		$this->assertNull($pruefer->pruefeZuege('d1d8', true));
+		$this->assertNull($pruefer->pruefeZuege('e2e4 e8d7 e4e5', true));
+		$this->assertIsString($pruefer->pruefeZuege('', true));
+		$this->assertIsString($pruefer->pruefeZuege('e2e4 e8d7', true));
+		// Im Lichess-Format bleibt ein einzelner Zug ungültig
+		$this->assertIsString($pruefer->pruefeZuege('d1d8'));
+	}
+
+	/**
 	 * Zu kurze, ungerade oder falsch geschriebene Zugfolgen werden abgewiesen.
 	 */
 	public function testUngueltigeZuegeWerdenAbgewiesen(): void

@@ -1,5 +1,18 @@
 # Schachaufgaben-Bundle Changelog
 
+## Version 1.3.0 (2026-09-28)
+
+* Add: PGN-Import eigener Aufgaben im Backend (Inhalte → Schachaufgaben → PGN-Import): Jede
+  Partie wird eine Aufgabe aus `[FEN]` und Hauptvariante, Varianten und Kommentare werden
+  übergangen, optional `[Rating]` und `[Themes]`. Umrechnung im Browser mit chess.js
+  (`pgn.js`), Prüfung und Speicherung auf dem Server in Blöcken, Dubletten über eine
+  Prüfsumme aus FEN und Zügen (neues Feld `schluessel`).
+* Add: Feld „Spieler zieht zuerst" (`spielerZuerst`): Aufgaben ohne auslösenden Gegnerzug. Das
+  Training lässt den Gegnerzug dann weg; die Prüfung erwartet eine ungerade Zahl von Zügen.
+  Im Backend prüfen Zugfolge und dieses Feld einander gegenseitig, weil Contao die Felder eines
+  Formulars einzeln speichert; ein Widerspruch weist beide ab.
+* Add: Tests für `pgn.js` (Node.js) und für die Zugfolge bei „Spieler zieht zuerst".
+
 ## Version 1.2.1 (2026-09-28)
 
 * Change: Das bloße Aufrufen einer Aufgabe speichert nichts mehr. Einträge in

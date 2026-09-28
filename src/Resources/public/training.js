@@ -119,12 +119,20 @@ class SchachaufgabenTraining {
         this.ergebnis = null
         this.chess = new Chess(daten.fen)
 
-        // Der Gegner zieht zuerst; der Spieler hat die andere Farbe
-        this.farbe = this.chess.turn() === "w" ? COLOR.black : COLOR.white
+        // Im Lichess-Format zieht der Gegner zuerst, der Spieler hat die andere
+        // Farbe; bei Aufgaben aus einer PGN-Sammlung ist er in der FEN schon am Zug
+        const amZug = this.chess.turn() === "w" ? COLOR.white : COLOR.black
+        this.farbe = daten.spielerZuerst ? amZug : (amZug === COLOR.white ? COLOR.black : COLOR.white)
         this.spielerAnzeigen(daten.spieler)
 
         await this.brett.setOrientation(this.farbe)
         await this.brett.setPosition(daten.fen, false)
+
+        if (daten.spielerZuerst) {
+            this.spielerIstAmZug()
+            return
+        }
+
         await warten(PAUSE)
         await this.gegnerZieht()
     }
@@ -143,6 +151,13 @@ class SchachaufgabenTraining {
             return
         }
 
+        this.spielerIstAmZug()
+    }
+
+    /**
+     * Zeigt an, wer am Zug ist, und gibt die Eingabe für den Spieler frei.
+     */
+    spielerIstAmZug() {
         this.status(this.farbe === COLOR.white ? this.texte.amZugWeiss : this.texte.amZugSchwarz)
         this.feld.loesung.disabled = false
         this.brett.enableMoveInput(this.eingabe, this.farbe)

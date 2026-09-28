@@ -87,3 +87,28 @@ $GLOBALS['TL_LANG']['tl_schachaufgaben']['import_seite'] = array
 	'fehlerbeispiele'    => 'Fehlerhafte Zeilen (Auszug)',
 	'serverfehler'       => 'Der Server hat mit einem Fehler geantwortet',
 );
+
+// Feld „Spieler zieht zuerst" und PGN-Import (do=schachaufgaben&key=pgn)
+$GLOBALS['TL_LANG']['tl_schachaufgaben']['spielerZuerst'] = array('Spieler zieht zuerst', 'Der Spieler ist in der Stellung schon am Zug, es gibt keinen auslösenden Gegnerzug (üblich bei Aufgaben aus PGN-Sammlungen). Dann ist die Anzahl der Züge ungerade.');
+$GLOBALS['TL_LANG']['tl_schachaufgaben']['pgn'] = array('PGN-Import', 'Eigene Aufgaben aus einer PGN-Datei importieren');
+$GLOBALS['TL_LANG']['tl_schachaufgaben']['pgn_seite'] = array
+(
+	'zurueck'          => 'Zurück',
+	'anleitung'        => 'Jede Partie der PGN-Datei wird eine Aufgabe: Ausgangsstellung aus dem Tag <code>[FEN]</code>, Lösung aus der Hauptvariante; Varianten und Kommentare werden übergangen. Optional übernimmt der Import <code>[Rating]</code> als Wertung und <code>[Themes]</code> als Motive. Die Datei wird im Browser gelesen und nicht hochgeladen; Aufgaben, die es schon gibt, werden übersprungen.',
+	'datei'            => 'PGN-Datei',
+	'optionen_legend'  => 'Voreinstellungen',
+	'spielerZuerst'    => array('Spieler zieht zuerst', 'In der Stellung ist der Löser am Zug (üblich bei Aufgabensammlungen). Abschalten, wenn der erste Zug der des Gegners ist, wie bei Lichess.'),
+	'wertung'          => array('Wertung', 'Für Aufgaben ohne [Rating]; passt sich durch das Training an.'),
+	'motive'           => array('Motive', 'Für Aufgaben ohne [Themes], z. B. „fork pin".'),
+	'unveroeffentlicht' => array('Neue Aufgaben nicht veröffentlichen', 'Die Aufgaben erscheinen erst im Training, wenn sie freigeschaltet sind.'),
+	'pruefen'          => 'Datei prüfen',
+	'speichern'        => 'Aufgaben speichern',
+	'partie'           => 'Partie %d',
+	'geprueft'         => 'Datei geprüft, noch nichts gespeichert.',
+	'vorschau'         => '%d Partien, davon %d brauchbare Aufgaben und %d fehlerhaft.',
+	'speichert'        => 'Aufgaben werden gespeichert …',
+	'ergebnis'         => '%d neu gespeichert, %d schon vorhanden, %d vom Server abgewiesen.',
+	'fertig'           => 'Import beendet.',
+	'fehlerbeispiele'  => 'Nicht übernommen (Auszug):',
+	'serverfehler'     => 'Der Server hat mit einem Fehler geantwortet',
+);

@@ -115,6 +115,8 @@ class Training
 			'id'      => $id,
 			'fen'     => (string) $aufgabe['fen'],
 			'zuege'   => preg_split('/\s+/', trim((string) $aufgabe['zuege']), -1, PREG_SPLIT_NO_EMPTY),
+			// true: kein auslösender Gegnerzug, der Spieler ist sofort am Zug
+			'spielerZuerst' => '1' === (string) ($aufgabe['spielerZuerst'] ?? ''),
 			'spieler' => $this->spielerDaten($spieler, null === $memberId),
 		);
 	}

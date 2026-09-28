@@ -87,3 +87,28 @@ $GLOBALS['TL_LANG']['tl_schachaufgaben']['import_seite'] = array
 	'fehlerbeispiele'    => 'Invalid lines (excerpt)',
 	'serverfehler'       => 'The server responded with an error',
 );
+
+// Feld „Spieler zieht zuerst" und PGN-Import (do=schachaufgaben&key=pgn)
+$GLOBALS['TL_LANG']['tl_schachaufgaben']['spielerZuerst'] = array('Player moves first', 'The player is already to move in the position; there is no opponent move starting the puzzle (common for puzzles from PGN collections). The number of moves is then odd.');
+$GLOBALS['TL_LANG']['tl_schachaufgaben']['pgn'] = array('PGN import', 'Import your own puzzles from a PGN file');
+$GLOBALS['TL_LANG']['tl_schachaufgaben']['pgn_seite'] = array
+(
+	'zurueck'          => 'Go back',
+	'anleitung'        => 'Every game in the PGN file becomes a puzzle: starting position from the <code>[FEN]</code> tag, solution from the main line; variations and comments are skipped. Optionally <code>[Rating]</code> is used as the rating and <code>[Themes]</code> as the themes. The file is read in the browser and not uploaded; puzzles that already exist are skipped.',
+	'datei'            => 'PGN file',
+	'optionen_legend'  => 'Defaults',
+	'spielerZuerst'    => array('Player moves first', 'The solver is to move in the position (common for puzzle collections). Uncheck if the first move is the opponent’s, as on Lichess.'),
+	'wertung'          => array('Rating', 'For puzzles without [Rating]; adapts through the training.'),
+	'motive'           => array('Themes', 'For puzzles without [Themes], e.g. "fork pin".'),
+	'unveroeffentlicht' => array('Do not publish new puzzles', 'The puzzles only appear in the training once they are published.'),
+	'pruefen'          => 'Check file',
+	'speichern'        => 'Save puzzles',
+	'partie'           => 'Game %d',
+	'geprueft'         => 'File checked, nothing saved yet.',
+	'vorschau'         => '%d games, %d usable puzzles and %d invalid.',
+	'speichert'        => 'Saving puzzles …',
+	'ergebnis'         => '%d newly saved, %d already existing, %d rejected by the server.',
+	'fertig'           => 'Import finished.',
+	'fehlerbeispiele'  => 'Not imported (excerpt):',
+	'serverfehler'     => 'The server responded with an error',
+);

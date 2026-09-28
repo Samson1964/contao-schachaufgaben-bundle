@@ -125,11 +125,13 @@ nach denselben Regeln wie beim Import geprüft.
 | Feld | Inhalt |
 | --- | --- |
 | `fen` | Stellung **vor** dem ersten Zug |
+| `spielerZuerst` | leer: der erste Zug ist der Gegnerzug (Lichess); `1`: der Spieler ist sofort am Zug (PGN-Aufgaben) |
 | `zuege` | UCI-Züge, durch Leerzeichen getrennt. Der erste ist der Gegnerzug, der die Aufgabe auslöst; danach wechseln Lösung und Antwort. |
 | `wertung`, `wertungAbweichung`, `wertungVolatilitaet` | Schwierigkeit nach Glicko-2 |
 | `spiele`, `beliebtheit`, `gefaellt`, `gefaelltNicht` | eigene Statistik der Website (siehe oben) |
 | `motive`, `eroeffnung` | Motive und Eröffnung im Lichess-Format |
 | `quelle`, `lichessId`, `partieUrl` | Herkunft; `lichessId` ist eindeutig und unterscheidet Groß- und Kleinschreibung |
+| `schluessel` | Prüfsumme aus FEN und Zügen bei PGN-Importen, gegen Dubletten |
 
 Die Aufgaben werden im Backend unter **Inhalte → Schachaufgaben** verwaltet.
 
@@ -158,6 +160,26 @@ Konsolenbefehls.
 
 Gemessen (PHP-Entwicklungsserver, lokale MariaDB): die ganze Datei mit 6,1 Mio. Zeilen in
 1:49 Minuten, 50.000 neue Aufgaben in 12 Sekunden.
+
+### Eigene Aufgaben aus einer PGN-Datei
+
+Im Backend unter **Inhalte → Schachaufgaben → PGN-Import**. Jede Partie der Datei wird eine
+Aufgabe:
+
+* Ausgangsstellung aus dem Tag `[FEN]`; Partien ohne FEN werden gemeldet und übergangen.
+* Lösung aus der Hauptvariante. Varianten, Kommentare und Bewertungszeichen, wie ChessBase
+  sie schreibt, werden übergangen. Endet die Hauptvariante mit einer Antwort des Gegners, wird
+  sie weggelassen, denn eine Aufgabe endet immer mit einem Zug des Lösers.
+* **Spieler zieht zuerst** (vorbelegt): Der Löser ist in der Stellung am Zug, wie bei
+  Aufgabensammlungen üblich. Abschalten, wenn der erste Zug der des Gegners ist, wie bei Lichess.
+  Die Einstellung steht auch an jeder Aufgabe im Backend.
+* Optional `[Rating]` als Wertung und `[Themes]` als Motive; sonst gelten die Voreinstellungen
+  des Formulars.
+
+Die Datei wird im Browser gelesen und mit chess.js umgerechnet; sie wird nicht hochgeladen. Der
+Server prüft jede Aufgabe mit denselben Regeln wie beim Lichess-Import. Schon vorhandene
+Aufgaben (gleiche Stellung, gleiche Züge) werden übersprungen, dieselbe Datei lässt sich also
+gefahrlos noch einmal importieren.
 
 ### Per Konsole
 
@@ -215,12 +237,8 @@ Die Übersetzung der Eröffnungen hat eigene Tests für Node.js; sie liest das W
 aus der Sprachdatei:
 
 ```bash
-node --test tests/js/eroeffnung.test.mjs
+node --test tests/js/eroeffnung.test.mjs tests/js/pgn.test.mjs
 ```
-
-## Geplant
-
-* Import eigener Aufgaben als PGN mit `[FEN]`-Kopf.
 
 ## Installation
 
