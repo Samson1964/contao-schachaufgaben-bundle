@@ -33,7 +33,7 @@ $s = $this->summen;
 		<?php else: ?>
 			<span class="sa-stat-knopf gesperrt" aria-disabled="true"><?= $t['vor'] ?>&nbsp;&#9654;</span>
 		<?php endif; ?>
-		<span class="sa-stat-hinweis"><?= sprintf($t['bestand'], $zahl($this->bestand['aufgaben']), $zahl($this->bestand['spieler'])) ?></span>
+		<span class="sa-stat-hinweis"><?= sprintf($t[1 === (int) $this->bestand['spieler'] ? 'bestandEins' : 'bestand'], $zahl($this->bestand['aufgaben']), $zahl($this->bestand['spieler'])) ?></span>
 	</div>
 
 	<?php if (!$this->hatDaten): ?>
@@ -53,7 +53,7 @@ $s = $this->summen;
 			<div class="sa-stat-kennzahl">
 				<strong><?= null === $this->quote ? '–' : $this->quote.' %' ?></strong>
 				<span><?= $t['quote'] ?></span>
-				<small><?= sprintf($t['neueSpieler'], $zahl($this->bestand['neueSpieler'])) ?></small>
+				<small><?= sprintf($t[1 === (int) $this->bestand['neueSpieler'] ? 'neueSpielerEins' : 'neueSpieler'], $zahl($this->bestand['neueSpieler'])) ?></small>
 			</div>
 		</div>
 

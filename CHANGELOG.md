@@ -1,5 +1,10 @@
 # Schachaufgaben-Bundle Changelog
 
+## Version 1.4.1 (2026-09-29)
+
+* Fix: Statistik im Backend mit Einzahl bei genau einem Mitglied („1 neues Mitglied im Zeitraum",
+  „1 Mitglied mit Wertung").
+
 ## Version 1.4.0 (2026-09-28)
 
 * Add: Statistik der Zugriffe und gespielten Aufgaben im Backend, als globale Operation
